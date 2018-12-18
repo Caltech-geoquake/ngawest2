@@ -17,8 +17,13 @@ This repository is forked from https://github.com/fengw/pynga and substantial ch
 
 ```python
 import ngawest2
-Mw, R_rup, Vs30, T = 5.5, 20, 450, 2.4
-result = ngawest2.GMPE_array(model, Mw, R_rup, Vs30, T)
+
+model = 'ASK14'
+Mw, R_rup, Vs30, T, rake= 5.5, 20, 450, 2.4, 0
+result = ngawest2.GMPE(model, Mw, R_rup, Vs30, T, rake=rake)
+
+T_array = [2, 3, 4, 5, 6]
+results = ngawest2.GMPE_array(model, Mw, R_rup, Vs30, T_array, rake=rake)
 ```
 
 ### To-do
