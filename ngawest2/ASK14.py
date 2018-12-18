@@ -7,7 +7,7 @@ class ASK14_nga:
     """
     def __init__(self):
 
-        self.filepth = os.path.join(os.path.dirname(__file__), 'NGA_west2')
+        self.filepth = os.path.join(os.path.dirname(__file__), 'coeffs')
         self.CoefFile = os.path.join( self.filepth, 'ASK14.csv' )
         self.Coefs = {}
         self.ReadModelCoefs()
@@ -67,8 +67,7 @@ class ASK14_nga:
         if T in self.periods:
             self.T = T
         else:
-            print('T is not in periods list, try to interpolate')
-            raise ValueError
+            raise ValueError('T is not in periods list, try to interpolate')
 
         self.c = 2.4*(self.T != -2) + 2400*(self.T == -2)
 
@@ -81,15 +80,13 @@ class ASK14_nga:
             self.Frv = 1*(Ftype == 'RV')
         else:
             if rake == None or rake < -180 or rake > 180.:
-                print('rake angle should be within [-180,180]')
-                raise ValueError
+                raise ValueError('rake angle should be within [-180,180]')
             else:
                 self.Frv, self.Fnm = rake2ftype_AS( self.rake )
 
         if W == None:
             if self.rake == None:
-                print('you should give either the fault width W or the rake angle')
-                raise ValueError
+                raise ValueError('you should give either the fault width W or the rake angle')
             else:
                 self.W = calc_W(self.M,self.rake)
         else:
@@ -97,8 +94,7 @@ class ASK14_nga:
 
         if dip == None:
             if self.rake == None:
-                print('you should give either the fault dip angle or the rake angle')
-                raise ValueError
+                raise ValueError('you should give either the fault dip angle or the rake angle')
             else:
                 self.dip = calc_dip( self.rake )
         else:
@@ -107,10 +103,11 @@ class ASK14_nga:
         if Ztor == None:
             if Zhypo == None:
                 if self.rake == None:
-                    print('you should give either the Ztor or the rake angle')
-                    raise ValueError
+                    raise ValueError('you should give either the Ztor or the rake angle')
                 else:
                     Zhypo = calc_Zhypo( self.M, self.rake )
+            if not W:
+                W = calc_W(self.M, self.rake)
             self.Ztor = calc_Ztor( W, self.dip, Zhypo )
         else:
             self.Ztor = Ztor
@@ -119,8 +116,7 @@ class ASK14_nga:
 
         if Fhw == None:
             if azimuth == None and Rx == None:
-                print('either one of azimuth angle, Rx and Fhw has to be specified')
-                raise ValueError
+                raise ValueError('either one of azimuth angle, Rx and Fhw has to be specified')
 
             if azimuth != None:
                 if 0 <= azimuth <= 180. and dip != 90.:
@@ -203,9 +199,14 @@ class ASK14_nga:
         else:
             Ti = GetKey(self.T)
 
-        for key in ['c4','a1','a2','a3','a6','a8','a17','M1']:
-            cmd = "%s = self.Coefs['%s']['%s']"%(key,Ti,key)
-            exec(cmd)
+        c4 = self.Coefs[Ti]['c4']
+        a1 = self.Coefs[Ti]['a1']
+        a2 = self.Coefs[Ti]['a2']
+        a3 = self.Coefs[Ti]['a3']
+        a6 = self.Coefs[Ti]['a6']
+        a8 = self.Coefs[Ti]['a8']
+        a17 = self.Coefs[Ti]['a17']
+        M1 = self.Coefs[Ti]['M1']
 
         c4M = c4*(self.M>5) + (c4-(c4-1)*(5-self.M))*(4<self.M<=5) + 1*(self.M<=4)
         Rtmp = np.sqrt(self.Rrup**2+c4M**2)
@@ -444,9 +445,17 @@ class ASK14_nga:
         if Rrup == None:
             Rrup = self.Rrup
 
-        for key in ['VLIN','a31','a28','a29','a36','a37','a38','a40','a41','a42']:
-            cmd = "%s = self.Coefs['%s']['%s']"%(key,Ti,key)
-            exec(cmd)
+        Vlin = self.Coefs[Ti]['VLIN']
+        a31 = self.Coefs[Ti]['a31']
+        a25 = self.Coefs[Ti]['a25']
+        a28 = self.Coefs[Ti]['a28']
+        a29 = self.Coefs[Ti]['a29']
+        a36 = self.Coefs[Ti]['a36']
+        a37 = self.Coefs[Ti]['a37']
+        a38 = self.Coefs[Ti]['a38']
+        a40 = self.Coefs[Ti]['a40']
+        a41 = self.Coefs[Ti]['a41']
+        a42 = self.Coefs[Ti]['a42']
 
         if self.region == 'CA':
             return 0.0

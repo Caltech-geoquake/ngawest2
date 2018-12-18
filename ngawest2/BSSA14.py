@@ -8,7 +8,7 @@ class BSSA14_nga:
     (validated with results from original NGA modelers)
     """
     def __init__(self):
-        self.filepth = os.path.join(os.path.dirname(__file__),'NGA_west2')
+        self.filepth = os.path.join(os.path.dirname(__file__),'coeffs')
         self.CoefFile = os.path.join(self.filepth, 'BSSA14.csv')
         self.Coefs = {}
         self.ReadModelCoefs()
@@ -88,26 +88,21 @@ class BSSA14_nga:
         if T in self.periods:
             self.T = T
         else:
-            print('T is not in periods list, try to interpolate')
-            raise ValueError
+            raise ValueError('T is not in periods list, try to interpolate')
 
         # check inputs
         if self.M == None or self.M < 0:
-            print('Moment magnitude must be a postive number')
-            raise ValueError
+            raise ValueError('Moment magnitude must be a postive number')
         if self.Rjb == None or self.Rjb < 0:
-            print('Joyner-Boore distance must be a non-negative number')
-            raise ValueError
+            raise ValueError('Joyner-Boore distance must be a non-negative number')
         if self.Vs30 == None or self.Vs30 < 0:
-            print('Vs30 must be a positive number')
-            raise ValueError
+            raise ValueError('Vs30 must be a positive number')
 
         self.rake = rake
         self.Mech = Mech
 
         if rake == None and Mech == None and Ftype == None:
-            print('either rake or (U,SS,NM,RV) should be provided')
-            raise ValueError
+            raise ValueError('either rake or (U,SS,NM,RV) should be provided')
         else:
             if Ftype != None:
                 self.U = 1*(Ftype == 'U')
@@ -154,10 +149,10 @@ class BSSA14_nga:
     def ftype(self):
         FT = rake2ftype_BA( self.rake )   # change in this version
         if FT not in self.faults:
-            print('Invalid fault type!')
-            print('It should be in one of the following list:')
-            print(self.faults)
-            raise ValueError
+            raise ValueError('%s\n%s\n%s' % \
+                            ('Invalid fault type!',
+                            'It should be in one of the following list:',
+                            self.faults))
         else:
             if FT == 'unspecified' or FT == 'U':
                 self.U = 1
@@ -185,9 +180,15 @@ class BSSA14_nga:
             Ti = GetKey(Tother)
         else:
             Ti = GetKey(self.T)
-        for key in ['e0','e1','e2','e3','e4','e5','e6','Mh']:
-            cmd = "%s = self.Coefs['%s']['%s']"%(key,Ti,key)
-            exec(cmd)
+
+        e0 = self.Coefs[Ti]['e0']
+        e1 = self.Coefs[Ti]['e1']
+        e2 = self.Coefs[Ti]['e2']
+        e3 = self.Coefs[Ti]['e3']
+        e4 = self.Coefs[Ti]['e4']
+        e5 = self.Coefs[Ti]['e5']
+        e6 = self.Coefs[Ti]['e6']
+        Mh = self.Coefs[Ti]['Mh']
 
         faulting = e0*self.U + e1*self.SS + e2*self.NM + e3*self.RV
         if self.M <= Mh:
@@ -304,9 +305,17 @@ class BSSA14_nga:
 
     def compute_std(self):
         Ti = GetKey(self.T )
-        for key in ['phi1','phi2','tau1','tau2','R1','R2','V1','V2','D_phi_R','D_phi_V']:
-            cmd = "%s = self.Coefs['%s']['%s']"%(key, Ti,key)
-            exec(cmd)
+
+        phi1 = self.Coefs[Ti]['phi1']
+        phi2 = self.Coefs[Ti]['phi2']
+        tau1 = self.Coefs[Ti]['tau1']
+        tau2 = self.Coefs[Ti]['tau2']
+        R1 = self.Coefs[Ti]['R1']
+        R2 = self.Coefs[Ti]['R2']
+        V1 = self.Coefs[Ti]['V1']
+        V2 = self.Coefs[Ti]['V2']
+        D_phi_R = self.Coefs[Ti]['D_phi_R']
+        D_phi_V = self.Coefs[Ti]['D_phi_V']
 
         # compute intra-event sigma
         if self.M <= 4.5:

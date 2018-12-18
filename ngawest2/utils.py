@@ -18,12 +18,10 @@ def cpt_sqrt( a,b ):
 def RMScalc( V1,V2, Ratio=True ):
     N = len(V1)
     if len(V2) != N:
-        print('length of array2 should be the same as array1')
-        raise ValueError
+        raise ValueError('length of array2 should be the same as array1')
     else:
         if 0 in V2:
-            print('elements in array2 should not be zeros')
-            raise ValueError
+            raise ValueError('elements in array2 should not be zeros')
         if Ratio:
             Error = (V1-V2)/V2
         else:
@@ -219,15 +217,13 @@ def mapfunc(func,*args,**kwds):
             key1 = '%s'%ina
             nl0 = len(list(args0[key1].keys()))
             if nl0 != 1 and nl0 < nl:
-                print('input argument length error!')
-                raise ValueError
-
+                raise ValueError('input argument length error!')
+                
         for ink in range( nk ):
             key1 = keys[ink]
             nl0k = len(list(kwds0[key1].keys()))  # number of elements for each arguments (for map)
             if nl0k != 1 and nl0k < nl:
-                print('input kwds element length error!')
-                raise ValueError
+                raise ValueError('input kwds element length error!')
 
         # map function
         value = []
@@ -266,8 +262,7 @@ def mapfunc(func,*args,**kwds):
             key1 = '%s'%ina
             nl0 = len(list(args0[key1].keys()))
             if nl0 != 1 and nl0 < nl:
-                print('input argument length error!')
-                raise ValueError
+                raise ValueError('input argument length error!')
 
         # map function
         value = []
@@ -430,8 +425,8 @@ def rake2ftype_BA(rake):
         elif -150. <= rake <= -30.:
             ftype = 'NM' # normal
         else:
-            print('Wrong rake angle!')
-            raise ValueError
+            raise ValueError('Wrong rake angle!')
+            
     return ftype
 
 def rake2ftype_CB(rake):
@@ -471,8 +466,7 @@ def calc_dip( rake ):
         dip angle in degree
     """
     if abs(rake) > 180:
-        print('rake angle should be within -180 and 180')
-        raise ValueError
+        raise ValueError('rake angle should be within -180 and 180')
 
     if abs(rake)<=30 or abs(rake)>=150:
         dip = 90
@@ -489,11 +483,9 @@ def calc_Zhypo(M,rake):
     When Ztor is unknown from input models
     """
     if M < 0:
-        print('Magnitude should be larger than 0')
-        raise ValueError
+        raise ValueError('Magnitude should be larger than 0')
     if abs(rake) > 180:
-        print('rake angle should be within -180 and 180')
-        raise ValueError
+        raise ValueError('rake angle should be within -180 and 180')
 
     if abs(rake) < 30 or abs(rake) > 150:
         # strike-slip
@@ -508,13 +500,11 @@ def calc_W(M,rake):
     Compute fault width when not specified by input
     """
     if M < 0:
-        print('Magnitude should be larger than 0')
-        raise ValueError
+        raise ValueError('Magnitude should be larger than 0')
 
     # In R
     if abs(rake) > 180:
-        print('rake angle should be within -180 and 180')
-        raise ValueError
+        raise ValueError('rake angle should be within -180 and 180')
     if abs(rake) < 30 or abs( rake ) > 150:
         W = 10 ** (-0.76+0.27*M)
     elif -150 <= rake <= -30:
@@ -534,14 +524,11 @@ def calc_Ztor(W,dip,Zhypo):
         dip should be in degree
     """
     if dip <= 0 or dip > 90:
-        print('dip angle should be with in (0,90]')
-        raise ValueError
+        raise ValueError('dip angle should be with in (0,90]')
     if W <= 0:
-        print('Fault width should be larger than 0')
-        raise ValueError
+        raise ValueError('Fault width should be larger than 0')
     if Zhypo < 0:
-        print('Zhypo should be larger than 0')
-        raise ValueError
+        raise ValueError('Zhypo should be larger than 0')
     Ztor = max( Zhypo-0.6*W*np.sin( dip * np.pi/ 180 ), 0 )
     return Ztor
 
@@ -554,20 +541,15 @@ def calc_Rx(Rjb, Ztor, W, dip, azimuth, Rrup=None):
     Compute distance parameter Rx from other inputs
     """
     if Rjb < 0:
-        print('Joyer-Boore distance Rjb should be larger than 0')
-        raise ValueError
+        raise ValueError('Joyer-Boore distance Rjb should be larger than 0')
     if Ztor < 0:
-        print('Ztor should be larger than 0')
-        raise ValueError
+        raise ValueError('Ztor should be larger than 0')
     if W <= 0:
-        print('Fault width should be larger than 0')
-        raise ValueError
+        raise ValueError('Fault width should be larger than 0')
     if dip<=0 or dip > 90:
-        print('dip angle should be (0,90]')
-        raise ValueError
+        raise ValueError('dip angle should be (0,90]')
     if abs( azimuth ) > 180.0:
-        print('azimuth should be width in -180.0 and 180.0')
-        raise ValueError
+        raise ValueError('azimuth should be width in -180.0 and 180.0')
 
     d = dip * np.pi/180    # degree to radius
     a = azimuth * np.pi/180
@@ -604,17 +586,13 @@ def calc_Rrup( Rx, Ztor, W, dip, azimuth, Rjb=None ):
     Compute the closest distance from site the the surface the fault
     """
     if Ztor < 0:
-        print('Ztor should be larger than 0')
-        raise ValueError
+        raise ValueError('Ztor should be larger than 0')
     if W <= 0:
-        print('Fault width should be larger than 0')
-        raise ValueError
+        raise ValueError('Fault width should be larger than 0')
     if dip<=0 or dip > 90:
-        print('dip angle should be (0,90]')
-        raise ValueError
+        raise ValueError('dip angle should be (0,90]')
     if abs( azimuth ) > 180:
-        print('azimuth should be width in -180 and 180')
-        raise ValueError
+        raise ValueError('azimuth should be width in -180 and 180')
 
     d = dip * np.pi/180    # degree to radius
     a = azimuth * np.pi/180
@@ -637,8 +615,7 @@ def calc_Rrup( Rx, Ztor, W, dip, azimuth, Rjb=None ):
         Ry = 0
     elif azimuth == 0 or azimuth == 180 or azimuth == -180:
         if Rjb == None:
-            print('Rjb cannot be None in the case azimuth == 0 or azimuth == 180 or azimuth == -180')
-            raise ValueError
+            raise ValueError('Rjb cannot be None in the case azimuth == 0 or azimuth == 180 or azimuth == -180')
         else:
             Ry = Rjb
     else:
@@ -888,8 +865,7 @@ def CheckPointInPolygon(point, verts):
     verts = np.array( verts )
     dim = verts.shape[1]
     if Ndim != dim:
-        print('point and shape should be defined with two coordinates')
-        raise ValueError
+        raise ValueError('point and shape should be defined with two coordinates')
 
     # test point
     testx = point[0]
@@ -1836,8 +1812,7 @@ def calc_Z1(Vs30,Z1model):
     return in km
     """
     if Vs30 < 0:
-        print(' Vs30 should be larger than 0')
-        raise ValueError
+        raise ValueError(' Vs30 should be larger than 0')
 
     if Z1model == 'AS':
         if Vs30 < 180.:
@@ -1857,17 +1832,13 @@ def calc_Z25( Vs30, Z1=None, Z15=None, Z1model='CY' ):
     """
 
     if Vs30 == None and Z1== None and Z15==None:
-        print('Either Vs30, Z1.0 or Z1.5 should be specified')
-        raise ValueError
+        raise ValueError('Either Vs30, Z1.0 or Z1.5 should be specified')
     if Vs30 != None and Vs30 < 0:
-        print('Vs30 should be larger than 0')
-        raise ValueError
+        raise ValueError('Vs30 should be larger than 0')
     if Z1 != None and Z1 < 0:
-        print('Z1 should be larger than 0')
-        raise ValueError
+        raise ValueError('Z1 should be larger than 0')
     if Z15 != None and Z15 < 0:
-        print('Z15 should be larger than 0')
-        raise ValueError
+        raise ValueError('Z15 should be larger than 0')
     if Z15 != None:
         Z25 = 636 + 1.549*Z15
     elif Z1 != None:

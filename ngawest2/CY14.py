@@ -8,7 +8,7 @@ class CY14_nga:
     """
     def __init__(self):
 
-        self.filepth = os.path.join(os.path.dirname(__file__),'NGA_west2')
+        self.filepth = os.path.join(os.path.dirname(__file__),'coeffs')
         self.CoefFile = os.path.join(self.filepth, 'CY14.csv')
         self.Coefs = {}
         self.ReadModelCoefs()
@@ -60,8 +60,7 @@ class CY14_nga:
         if T in self.periods:
             self.T = T
         else:
-            print('T is not in periods list, try to interpolate')
-            raise ValueError
+            raise ValueError('T is not in periods list, try to interpolate')
 
         # required inputs
         self.M = M         # Moment Magnitude
@@ -81,15 +80,13 @@ class CY14_nga:
             self.Frv = 1*(Ftype == 'RV')
         else:
             if rake == None or rake < -180 or rake > 180.:
-                print('rake angle should be within [-180,180]')
-                raise ValueError
+                raise ValueError('rake angle should be within [-180,180]')
             else:
                 self.Frv, self.Fnm = rake2ftype_CY( self.rake )
 
         if W == None:
             if self.rake == None:
-                print('you should give either the fault width W or the rake angle')
-                raise ValueError
+                raise ValueError('you should give either the fault width W or the rake angle')
             else:
                 W = calc_W(self.M,self.rake)
         else:
@@ -97,8 +94,7 @@ class CY14_nga:
 
         if dip == None:
             if self.rake == None:
-                print('you should give either the fault dip angle or the rake angle')
-                raise ValueError
+                raise ValueError('you should give either the fault dip angle or the rake angle')
             else:
                 self.dip = calc_dip( self.rake )
         else:
@@ -112,18 +108,18 @@ class CY14_nga:
         if Ztor == None:
             if Zhypo == None:
                 if self.rake == None:
-                    print('you should give either the Ztor or the rake angle')
-                    raise ValueError
+                    raise ValueError('you should give either the Ztor or the rake angle')
                 else:
                     Zhypo = calc_Zhypo( self.M, self.rake )
+            if not W:
+                W = calc_W(self.M, self.rake)
             self.Ztor = calc_Ztor( W, self.dip, Zhypo )
         else:
             self.Ztor = Ztor
 
         if Fhw == None:
             if azimuth == None and Rx == None:
-                print('either one of azimuth angle, Rx and Fhw has to be specified')
-                raise ValueError
+                raise ValueError('either one of azimuth angle, Rx and Fhw has to be specified')
 
             if azimuth != None:
                 if 0 <= azimuth <= 180. and dip != 90.:
