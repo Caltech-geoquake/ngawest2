@@ -1,14 +1,14 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 """
-Generate Station List based on Rrup 
+Generate Station List based on Rrup
 """
 import os
 import sys
 import optparse
-import numpy as np 
+import numpy as np
 
-from pynga import * 
-from pynga.utils import * 
+from pynga import *
+from pynga.utils import *
 
 # Parse command-line options
 parser = optparse.OptionParser()
@@ -96,30 +96,30 @@ lon0 = cfg_dict['LON_TOP_CENTER']
 hypoAS = cfg_dict['HYPO_ALONG_STK']
 hypoDD = cfg_dict['HYPO_DOWN_DIP']
 
-origin = lon0, lat0    # center 
+origin = lon0, lat0    # center
 Dims = L, dl, W, dw, ztor
-Mech = strike, dip, rake 
+Mech = strike, dip, rake
 FaultTrace1, UpperSeisDepth, LowerSeisDepth, AveDip, dl, dw = FaultTraceGen(origin, Dims, Mech)
 FaultTrace, FaultSeg, AveStrike = SimpleFaultSurface(FaultTrace1,
                                                      UpperSeisDepth,
                                                      LowerSeisDepth,
                                                      AveDip)
 
-# generate grid of stations (for grid search)  in lon/lat 
+# generate grid of stations (for grid search)  in lon/lat
 strike = strike*np.pi/180.
 loc0 = [lon0, lat0, 0.0]
 
 vD = 0.0
-dhD = grid_size   # in km (grid size) 
-hDx = station_radius*1.5   
+dhD = grid_size   # in km (grid size)
+hDx = station_radius*1.5
 hDy = 0.5*L+R0+dhD*2    # along strike
 
-az = strike + np.pi 
+az = strike + np.pi
 vector = [az, hDy, vD]
 loc1 = EndLocation(loc0, vector)
 
 az = strike + np.pi*3./2.
-vector =[az, hDx, vD] 
+vector =[az, hDx, vD]
 loc11 = EndLocation(loc1, vector)  # new origin
 
 Nx = int(2*hDx/dhD + 1)
@@ -132,49 +132,49 @@ for iy in range(Ny):
     az = strike + np.pi/2.
     hD = dhD
     vector = [az, hD, vD]
-    LocX = LocY 
+    LocX = LocY
     for ix in range(Nx-1):
-	LocX = EndLocation(LocX, vector)
-	Loc2D.append(LocX)
+        LocX = EndLocation(LocX, vector)
+        Loc2D.append(LocX)
     az = strike
     hD = dhD
     vector = [az, hD, vD]
     LocY = EndLocation(LocY, vector)
 
-Nloc = len(Loc2D) 
+Nloc = len(Loc2D)
 LocS0 = np.array(Loc2D)
-print('Total station locations: ', Nloc) 
+print('Total station locations: ', Nloc)
 
 Rrups = []
 Rxs = []
 for iloc in range(len(Loc2D)):
-    SiteGeom = Loc2D[iloc] 
+    SiteGeom = Loc2D[iloc]
     Rjb, Rrup, Rx = DistanceToSimpleFaultSurface(SiteGeom,
                                                  FaultTrace1,
                                                  UpperSeisDepth,
                                                  LowerSeisDepth,
-                                                 AveDip) # in km 
+                                                 AveDip) # in km
     Rrups.append(Rrup)
     Rxs.append(Rx)
 
 if plot_prefix is not None:
-    import matplotlib.pyplot as plt 
+    import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     vertsClosed = FaultTrace + [FaultTrace[0]]
     verts1 = np.array(vertsClosed)
     plt.rc('font',family='Arial')
-    fig = plt.figure(1) 
+    fig = plt.figure(1)
     ax = fig.add_subplot(111)
     img = ax.scatter(LocS0[:,0], LocS0[:,1],
                      c=np.array(Rrups), s=np.array(Rrups), edgecolor='none')
     ax.plot(verts1[:,0], verts1[:,1], 'k')
     ax.set_xlabel('lon')
-    ax.set_ylabel('lat') 
+    ax.set_ylabel('lat')
     ax.set_title('All station grid and Rrup with domain: '
                  '%s*%s km^2, and grid size: %s km' %
                  (2*hDx, 2*hDy, dhD))
     fig.colorbar(img)
-    fig.savefig('%s_all_station_rrup_grid_size_%s.pdf' % 
+    fig.savefig('%s_all_station_rrup_grid_size_%s.pdf' %
                 (plot_prefix, '%.2f' % grid_size), format='pdf')
 
     fig = plt.figure(2)
@@ -183,7 +183,7 @@ if plot_prefix is not None:
                      c=np.array(Rxs), s=abs(np.array(Rxs)), edgecolor='none')
     ax.plot(verts1[:,0], verts1[:,1], 'k')
     ax.set_xlabel('lon')
-    ax.set_ylabel('lat') 
+    ax.set_ylabel('lat')
     ax.set_title('All station grid and Rx')
     fig.colorbar(img)
     fig.savefig('%s_all_station_rx_grid_size_%s.pdf' %
@@ -199,20 +199,20 @@ for iloc in range(Nloc):
     if Rrup0-dhD/2.<= Rrups[iloc] <= Rrup0+dhD/2.:
         if not all_around and Rxs[iloc] > 0:
             continue
-        Loc2D1.append(Loc2D[iloc]) 
-        Rrups1.append(Rrups[iloc]) 
+        Loc2D1.append(Loc2D[iloc])
+        Rrups1.append(Rrups[iloc])
         Rxs1.append(Rxs[iloc])
-    else: 
+    else:
         continue
 
-Nloc1 = len(Loc2D1) 
-print('Stations with distance Rrup=%s: ' % (Rrup0), Nloc1) 
-if Nloc1 < num_stations: 
+Nloc1 = len(Loc2D1)
+print('Stations with distance Rrup=%s: ' % (Rrup0), Nloc1)
+if Nloc1 < num_stations:
     print('Change your grid size smaller in order to do the subsampling')
     raise ValueError
 
 LocS1 = np.array(Loc2D1)
-    
+
 # Generate random integer (total number would be num_stations)
 # between 0 and Nloc
 LocS2 = []
@@ -220,7 +220,7 @@ i = 0
 index = []
 Rrups2 = []
 Rxs2 = []
-while i < num_stations: 
+while i < num_stations:
     index0 = np.random.randint(0, Nloc1-1)
     if not index0 in index:
         LocS2.append(LocS1[index0])
@@ -231,7 +231,7 @@ while i < num_stations:
     else:
         continue
 LocS2 = np.array(LocS2)
-    
+
 # write into file
 fid = open(output_file, 'w')
 fid.write('#Slon\tSlat\tRSN\tRrup(km)\tVs30(m/s)\n')
@@ -240,11 +240,11 @@ for ista in range(num_stations):
               (LocS2[ista,0], LocS2[ista,1],
                "sta-%04d" % (ista), Rrups2[ista], 863))
 fid.close()
-    
+
 if plot_prefix is not None:
-    fig = plt.figure(3) 
+    fig = plt.figure(3)
     fig.clf()
-    ax = Axes3D(fig) 
+    ax = Axes3D(fig)
     DepFactor = 1./6371*180./np.pi
     DepFactor = 1.0
     ax.plot(verts1[:,0], verts1[:,1],
@@ -256,7 +256,7 @@ if plot_prefix is not None:
             -verts1[3,2]*DepFactor, 'dip=%s' % ('%.1f' % AveDip))
     ax.set_xlabel('lon')
     ax.set_ylabel('lat')
-    ax.set_zlabel('dep (km)') 
+    ax.set_zlabel('dep (km)')
     ax.set_zlim3d([-110,0])
     ax.plot(LocS1[:,0], LocS1[:,1], 0.0, 'b^',
             label='Station Rrup=~%s km' % Rrup0)
@@ -270,4 +270,4 @@ if plot_prefix is not None:
     fig.savefig('%s_station_selection_grid_size_%s_Nsta_%s_RrupAt_%s.pdf' %
                 (plot_prefix, '%.2f' % grid_size,
                  num_stations, Rrup0), format='pdf')
-    plt.show() 
+    plt.show()
