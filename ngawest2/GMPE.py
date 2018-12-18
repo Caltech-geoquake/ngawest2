@@ -54,6 +54,8 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
 
     if model_name == 'CB':
         ngaM = CB14.CB14_nga()
+        if Fhw is None:
+            Fhw = 0
         kwds = {'Ftype':Ftype,'Rrup':Rrup,'Ztor':Ztor,'dip':dip,'Z25':Z25,'W':W,'Zhypo':Zhypo,'azimuth':azimuth,'Fhw':Fhw,'Z10':Z10,'Z15':Z15,'Arb':ArbCB,'SJ':SJ,'region':region,'CoefTerms':dict1[model_name]}
 
     if model_name == 'CY':

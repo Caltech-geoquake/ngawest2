@@ -121,6 +121,8 @@ class CB14_nga():
                     raise ValueError('you should give either the Ztor or the rake angle')
                 else:
                     Zhypo = calc_Zhypo( self.M, self.rake )
+            if not W:
+                W = calc_W(self.M, self.rake)
             self.Ztor = calc_Ztor( W, self.dip, Zhypo )
         else:
             self.Ztor = Ztor
