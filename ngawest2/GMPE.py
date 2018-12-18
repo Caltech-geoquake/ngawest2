@@ -113,7 +113,10 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
         NGAmedian = values[:,0]
 
     # returned quantities are all in g, not in log(g), event for the standard deviations
-    return NGAmedian, np.exp( NGAsigmaT ), np.exp( NGAtau ), np.exp( NGAsigma )      # all in g, include the standard deviation
+    return NGAmedian[0], \
+           np.exp(NGAsigmaT)[0], \
+           np.exp(NGAtau)[0], \
+           np.exp(NGAsigma)[0]      # all in g, include the standard deviation
 
 #%%----------------------------------------------------------------------------
 def GMPE_array(model_name, Mw, Rjb, Vs30, period_array, epislon=0, NGAs=None,
@@ -128,22 +131,21 @@ def GMPE_array(model_name, Mw, Rjb, Vs30, period_array, epislon=0, NGAs=None,
          D_DPP=0):
 
     import collections
-    if not isinstance(period_array, collections.ItemsView):
+    if not isinstance(period_array, collections.Iterable):
         raise TypeError('`period_array` must be a array-like object.')
 
+    results = []
     for period in period_array:
-        results = GMPE(model_name, Mw, Rjb, Vs30, period_array, epislon=epislon,
+        result_ = GMPE(model_name, Mw, Rjb, Vs30, period, epislon=epislon,
                        NGAs=NGAs, rake=rake, Mech=Mech, Ftype=Ftype, Fnm=Fnm,
                        Frv=Frv, dip=dip, W=W, Ztor=Ztor, Zhypo=Zhypo, Fas=Fas,
                        Rrup=Rrup, Rx=Rx, Fhw=Fhw, azimuth=azimuth,
                        VsFlag=VsFlag, Z25=Z25, Z15=Z15, Z10=Z10,
                        ArbCB=ArbCB, SJ=SJ,country=country, region=region,
                        Dregion=Dregion, CRjb=CRjb, Ry0=Ry0, D_DPP=D_DPP)
+        results.append(result_)
 
-    return results
+    results_T = list(zip(*results))
 
-
-
-
-
+    return tuple([np.array(_) for _ in results_T])
 
