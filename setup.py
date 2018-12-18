@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='ngawest2',
     version='0.0.1',
-    description='A Python library for elegant data visualization',
+    description='NGA-West2 GMPEs',
     author='Feng Wang, Jian Shi',
     license='GPL v3.0',
     url='https://github.com/Caltech-geoquake/ngawest2',

@@ -7,23 +7,24 @@ Created on Mon Dec 17 19:11:22 2018
 
 import numpy as np
 
-import utils
+from . import utils
 
 from . import BSSA14
 from . import CB14
 from . import CY14
 from . import ASK14
 
-def NGA14(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
-          rake=None, Mech=3, Ftype=None, Fnm=None, Frv=None,
-          dip=None, W=None, Ztor=None, Zhypo=None, Fas=0,
-          Rrup=None, Rx=None, Fhw=None, azimuth=None,
-          VsFlag=0, Z25=None, Z15=None, Z10=None,
-          ArbCB=0, SJ=0,
-          country='California', region='CA',
-          Dregion='GlobalCATW',
-          CRjb=15, Ry0=None,
-          D_DPP=0 ):
+#%%----------------------------------------------------------------------------
+def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
+         rake=None, Mech=3, Ftype=None, Fnm=None, Frv=None,
+         dip=None, W=None, Ztor=None, Zhypo=None, Fas=0,
+         Rrup=None, Rx=None, Fhw=None, azimuth=None,
+         VsFlag=0, Z25=None, Z15=None, Z10=None,
+         ArbCB=0, SJ=0,
+         country='California', region='CA',
+         Dregion='GlobalCATW',
+         CRjb=15, Ry0=None,
+         D_DPP=0):
 
     if NGAs == None:
         NGAs={'CB':{'NewCoefs':None,'terms':(1,1,1,1,1,1,1,1,1)},\
@@ -113,5 +114,36 @@ def NGA14(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
 
     # returned quantities are all in g, not in log(g), event for the standard deviations
     return NGAmedian, np.exp( NGAsigmaT ), np.exp( NGAtau ), np.exp( NGAsigma )      # all in g, include the standard deviation
+
+#%%----------------------------------------------------------------------------
+def GMPE_array(model_name, Mw, Rjb, Vs30, period_array, epislon=0, NGAs=None,
+         rake=None, Mech=3, Ftype=None, Fnm=None, Frv=None,
+         dip=None, W=None, Ztor=None, Zhypo=None, Fas=0,
+         Rrup=None, Rx=None, Fhw=None, azimuth=None,
+         VsFlag=0, Z25=None, Z15=None, Z10=None,
+         ArbCB=0, SJ=0,
+         country='California', region='CA',
+         Dregion='GlobalCATW',
+         CRjb=15, Ry0=None,
+         D_DPP=0):
+
+    import collections
+    if not isinstance(period_array, collections.ItemsView):
+        raise TypeError('`period_array` must be a array-like object.')
+
+    for period in period_array:
+        results = GMPE(model_name, Mw, Rjb, Vs30, period_array, epislon=epislon,
+                       NGAs=NGAs, rake=rake, Mech=Mech, Ftype=Ftype, Fnm=Fnm,
+                       Frv=Frv, dip=dip, W=W, Ztor=Ztor, Zhypo=Zhypo, Fas=Fas,
+                       Rrup=Rrup, Rx=Rx, Fhw=Fhw, azimuth=azimuth,
+                       VsFlag=VsFlag, Z25=Z25, Z15=Z15, Z10=Z10,
+                       ArbCB=ArbCB, SJ=SJ,country=country, region=region,
+                       Dregion=Dregion, CRjb=CRjb, Ry0=Ry0, D_DPP=D_DPP)
+
+    return results
+
+
+
+
 
 

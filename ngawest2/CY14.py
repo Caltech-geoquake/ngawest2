@@ -8,7 +8,7 @@ class CY14_nga:
     """
     def __init__(self):
 
-        self.filepth = os.path.join(os.path.dirname(__file__),'NGA_west2')
+        self.filepth = os.path.join(os.path.dirname(__file__),'coeffs')
         self.CoefFile = os.path.join(self.filepth, 'CY14.csv')
         self.Coefs = {}
         self.ReadModelCoefs()

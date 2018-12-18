@@ -8,7 +8,7 @@ class BSSA14_nga:
     (validated with results from original NGA modelers)
     """
     def __init__(self):
-        self.filepth = os.path.join(os.path.dirname(__file__),'NGA_west2')
+        self.filepth = os.path.join(os.path.dirname(__file__),'coeffs')
         self.CoefFile = os.path.join(self.filepth, 'BSSA14.csv')
         self.Coefs = {}
         self.ReadModelCoefs()

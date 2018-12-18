@@ -7,7 +7,7 @@ Created on Mon Dec 17 19:14:32 2018
 
 __version__ = '0.0.1'
 
-from .NGA14 import *
+from .GMPE import *
 
 
 
