@@ -203,9 +203,14 @@ class ASK14_nga:
         else:
             Ti = GetKey(self.T)
 
-        for key in ['c4','a1','a2','a3','a6','a8','a17','M1']:
-            cmd = "%s = self.Coefs['%s']['%s']"%(key,Ti,key)
-            exec(cmd)
+        c4 = self.Coefs[Ti]['c4']
+        a1 = self.Coefs[Ti]['a1']
+        a2 = self.Coefs[Ti]['a2']
+        a3 = self.Coefs[Ti]['a3']
+        a6 = self.Coefs[Ti]['a6']
+        a8 = self.Coefs[Ti]['a8']
+        a17 = self.Coefs[Ti]['a17']
+        M1 = self.Coefs[Ti]['M1']
 
         c4M = c4*(self.M>5) + (c4-(c4-1)*(5-self.M))*(4<self.M<=5) + 1*(self.M<=4)
         Rtmp = np.sqrt(self.Rrup**2+c4M**2)
@@ -444,9 +449,17 @@ class ASK14_nga:
         if Rrup == None:
             Rrup = self.Rrup
 
-        for key in ['VLIN','a31','a28','a29','a36','a37','a38','a40','a41','a42']:
-            cmd = "%s = self.Coefs['%s']['%s']"%(key,Ti,key)
-            exec(cmd)
+        Vlin = self.Coefs[Ti]['VLIN']
+        a31 = self.Coefs[Ti]['a31']
+        a25 = self.Coefs[Ti]['a25']
+        a28 = self.Coefs[Ti]['a28']
+        a29 = self.Coefs[Ti]['a29']
+        a36 = self.Coefs[Ti]['a36']
+        a37 = self.Coefs[Ti]['a37']
+        a38 = self.Coefs[Ti]['a38']
+        a40 = self.Coefs[Ti]['a40']
+        a41 = self.Coefs[Ti]['a41']
+        a42 = self.Coefs[Ti]['a42']
 
         if self.region == 'CA':
             return 0.0

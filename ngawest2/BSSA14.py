@@ -185,9 +185,15 @@ class BSSA14_nga:
             Ti = GetKey(Tother)
         else:
             Ti = GetKey(self.T)
-        for key in ['e0','e1','e2','e3','e4','e5','e6','Mh']:
-            cmd = "%s = self.Coefs['%s']['%s']"%(key,Ti,key)
-            exec(cmd)
+
+        e0 = self.Coefs[Ti]['e0']
+        e1 = self.Coefs[Ti]['e1']
+        e2 = self.Coefs[Ti]['e2']
+        e3 = self.Coefs[Ti]['e3']
+        e4 = self.Coefs[Ti]['e4']
+        e5 = self.Coefs[Ti]['e5']
+        e6 = self.Coefs[Ti]['e6']
+        Mh = self.Coefs[Ti]['Mh']
 
         faulting = e0*self.U + e1*self.SS + e2*self.NM + e3*self.RV
         if self.M <= Mh:
@@ -304,9 +310,17 @@ class BSSA14_nga:
 
     def compute_std(self):
         Ti = GetKey(self.T )
-        for key in ['phi1','phi2','tau1','tau2','R1','R2','V1','V2','D_phi_R','D_phi_V']:
-            cmd = "%s = self.Coefs['%s']['%s']"%(key, Ti,key)
-            exec(cmd)
+
+        phi1 = self.Coefs[Ti]['phi1']
+        phi2 = self.Coefs[Ti]['phi2']
+        tau1 = self.Coefs[Ti]['tau1']
+        tau2 = self.Coefs[Ti]['tau2']
+        R1 = self.Coefs[Ti]['R1']
+        R2 = self.Coefs[Ti]['R2']
+        V1 = self.Coefs[Ti]['V1']
+        V2 = self.Coefs[Ti]['V2']
+        D_phi_R = self.Coefs[Ti]['D_phi_R']
+        D_phi_V = self.Coefs[Ti]['D_phi_V']
 
         # compute intra-event sigma
         if self.M <= 4.5:
