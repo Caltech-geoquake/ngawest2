@@ -152,7 +152,7 @@ class BSSA14_nga:
             raise ValueError('%s\n%s\n%s' % \
                             ('Invalid fault type!',
                             'It should be in one of the following list:',
-                            self.faults)
+                            self.faults))
         else:
             if FT == 'unspecified' or FT == 'U':
                 self.U = 1
