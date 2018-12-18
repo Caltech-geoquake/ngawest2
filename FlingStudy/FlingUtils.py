@@ -50,7 +50,7 @@ def FaultGeom(IDs, Dims, Mech, HypoLoc, ProjDict, VisualDict=None):
 
     # visual test:
     if VisualDict != None:
-	print 'test plt'
+	print('test plt')
 	from mpl_toolkits.mplot3d import Axes3D
 
 	rlon, rlat = VisualDict['SiteLoc']   # site locaitons for visual analysis

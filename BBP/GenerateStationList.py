@@ -127,13 +127,13 @@ Ny = int(2*hDy/dhD + 1)
 
 LocY = loc11
 Loc2D = []
-for iy in xrange(Ny):
+for iy in range(Ny):
     Loc2D.append(LocY)
     az = strike + np.pi/2.
     hD = dhD
     vector = [az, hD, vD]
     LocX = LocY 
-    for ix in xrange(Nx-1):
+    for ix in range(Nx-1):
 	LocX = EndLocation(LocX, vector)
 	Loc2D.append(LocX)
     az = strike
@@ -143,11 +143,11 @@ for iy in xrange(Ny):
 
 Nloc = len(Loc2D) 
 LocS0 = np.array(Loc2D)
-print 'Total station locations: ', Nloc 
+print('Total station locations: ', Nloc) 
 
 Rrups = []
 Rxs = []
-for iloc in xrange(len(Loc2D)):
+for iloc in range(len(Loc2D)):
     SiteGeom = Loc2D[iloc] 
     Rjb, Rrup, Rx = DistanceToSimpleFaultSurface(SiteGeom,
                                                  FaultTrace1,
@@ -195,7 +195,7 @@ Rrup0 = station_radius
 Loc2D1 = []
 Rrups1 = []
 Rxs1 = []
-for iloc in xrange(Nloc):
+for iloc in range(Nloc):
     if Rrup0-dhD/2.<= Rrups[iloc] <= Rrup0+dhD/2.:
         if not all_around and Rxs[iloc] > 0:
             continue
@@ -206,9 +206,9 @@ for iloc in xrange(Nloc):
         continue
 
 Nloc1 = len(Loc2D1) 
-print 'Stations with distance Rrup=%s: ' % (Rrup0), Nloc1 
+print('Stations with distance Rrup=%s: ' % (Rrup0), Nloc1) 
 if Nloc1 < num_stations: 
-    print 'Change your grid size smaller in order to do the subsampling'
+    print('Change your grid size smaller in order to do the subsampling')
     raise ValueError
 
 LocS1 = np.array(Loc2D1)
@@ -235,7 +235,7 @@ LocS2 = np.array(LocS2)
 # write into file
 fid = open(output_file, 'w')
 fid.write('#Slon\tSlat\tRSN\tRrup(km)\tVs30(m/s)\n')
-for ista in xrange(num_stations):
+for ista in range(num_stations):
     fid.write('%s %s %s %s %s\n' %
               (LocS2[ista,0], LocS2[ista,1],
                "sta-%04d" % (ista), Rrups2[ista], 863))

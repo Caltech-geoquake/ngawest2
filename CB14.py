@@ -2,7 +2,7 @@
 """
 CB 2014 NGA model
 """
-from utils import *
+from .utils import *
 
 class CB14_nga():
     """
@@ -28,7 +28,7 @@ class CB14_nga():
         inputs = np.loadtxt(self.CoefFile,skiprows=2, delimiter=',')
         self.periods = inputs[:,0]
         coefs = inputs[:,1:]
-        for i in xrange( len(self.periods) ):
+        for i in range( len(self.periods) ):
             T1 = self.periods[i]
             Tkey = GetKey(T1)
             
@@ -41,7 +41,7 @@ class CB14_nga():
                 self.periods[i] = -1
               
             self.Coefs[Tkey] = {}
-            for ikey in xrange(len(self.CoefKeys)):
+            for ikey in range(len(self.CoefKeys)):
                 key = self.CoefKeys[ikey]
                 cmd = "self.Coefs['%s']['%s'] = coefs[%i,%i]"%(Tkey,key,i,ikey)
                 exec(cmd)
@@ -75,17 +75,17 @@ class CB14_nga():
 	if T in self.periods:
 	    self.T = T
 	else:
-	    print 'T is not in periods list, try to interpolate'
+	    print('T is not in periods list, try to interpolate')
 	    raise ValueError
 	
 	if self.M == None or self.M < 0:
-	    print 'Moment magnitude must be a postive number'
+	    print('Moment magnitude must be a postive number')
 	    raise ValueError
 	if self.Rjb == None or self.Rjb < 0: 
-	    print 'Joyner-Boore distance must be a non-negative number'
+	    print('Joyner-Boore distance must be a non-negative number')
 	    raise ValueError
 	if self.Vs30 == None or self.Vs30 < 0: 
-	    print 'Vs30 must be a positive number'
+	    print('Vs30 must be a positive number')
 	    raise ValueError
 	
 	# Determine the Fault-related parameters (if necessary)
@@ -94,14 +94,14 @@ class CB14_nga():
 	    self.Frv = 1*(Ftype == 'RV')
 	else: 
 	    if rake == None or rake < -180 or rake > 180.:
-		print 'rake angle should be within [-180,180]'
+		print('rake angle should be within [-180,180]')
 		raise ValueError
 	    else: 
 		self.Frv, self.Fnm = rake2ftype_CB( self.rake )
        
 	if W == None:
 	    if self.rake == None: 
-		print 'you should give either the fault width W or the rake angle'
+		print('you should give either the fault width W or the rake angle')
 		raise ValueError
 	    else:
 		self.W = calc_W(self.M,self.rake)
@@ -110,7 +110,7 @@ class CB14_nga():
 
 	if dip == None:
 	    if self.rake == None: 
-		print 'you should give either the fault dip angle or the rake angle'
+		print('you should give either the fault dip angle or the rake angle')
 		raise ValueError
 	    else:
 		self.dip = calc_dip( self.rake )
@@ -125,7 +125,7 @@ class CB14_nga():
 	if Ztor == None:
 	    if Zhypo == None:
 		if self.rake == None: 
-		    print 'you should give either the Ztor or the rake angle'
+		    print('you should give either the Ztor or the rake angle')
 		    raise ValueError
 		else:
 		    Zhypo = calc_Zhypo( self.M, self.rake )
@@ -186,7 +186,7 @@ class CB14_nga():
     
         # update coeficient (use updated coefficients)
 	if NewCoefs != None:
-	    NewCoefKeys = NewCoefs.keys()
+	    NewCoefKeys = list(NewCoefs.keys())
 	    Tkey = GetKey(self.T)
 	    for key in NewCoefKeys:
 		self.Coefs[Tkey][key] = NewCoefs[key]
@@ -579,8 +579,8 @@ def CB14nga_test(T, CoefTerms):
     kwds = {'Ftype':Ftype,'Z25':Z25,'Rrup':Rrup,'Zhypo':Zhypo,'W':W,'Fhw':Fhw, 'Ztor':Ztor,'azimuth':azimuth,'dip':dip,'Arb':Arb,'CoefTerms':CoefTerms}
     values = mapfunc( CBnga, M, Rjb, Vs30, T, rake,**kwds )
 
-    for i in xrange( len(values) ):
-	print values[i]
+    for i in range( len(values) ):
+	print(values[i])
 
     return CBnga
 
@@ -588,6 +588,6 @@ if __name__ == '__main__':
     CoefTerms = {'terms':(1,1,1,1,1,1,1,1,1),'NewCoefs':None}
     #for T in [0.01, 0.02, 0.03, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.5, 10.0, -1,-2]: 
     for T in [-1, 0.3, 1.0, 3.0]:
-        print 'CB SA at %s'%('%3.2f'%T)
+        print('CB SA at %s'%('%3.2f'%T))
         CBnga = CB14nga_test(T,CoefTerms)
 

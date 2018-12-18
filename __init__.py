@@ -6,18 +6,18 @@
 # Note: NGA08 provides GMRotI50, while NGA14 provides RotD50, so before do the comparison, do the conversion
 
 # Package content
-import CB08
-import BA08
-import CY08
-import AS08
-import SC08
+from . import CB08
+from . import BA08
+from . import CY08
+from . import AS08
+from . import SC08
 
-import BSSA14
-import CB14 
-import CY14 
-import ASK14 
+from . import BSSA14
+from . import CB14 
+from . import CY14 
+from . import ASK14 
 
-from utils import *
+from .utils import *
 
 # NGA08 Period list (available for each NGA models) 
 # -1.0: PGA; -2.0: PGV
@@ -146,10 +146,10 @@ def NGA08(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None, \
     
     # check the input period
     if period > 10.0 or 0<period<0.01:
-	print 'Positive period value should be within [0.01,10] for SA at corresponding periods'
+	print('Positive period value should be within [0.01,10] for SA at corresponding periods')
 	raise ValueError
     if period < 0 and period not in [-1,-2]:
-	print 'negative period should be -1,-2 for PGA and PGV'
+	print('negative period should be -1,-2 for PGA and PGV')
 	raise ValueError
 
     if model_name == 'BA':
@@ -167,7 +167,7 @@ def NGA08(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None, \
 	
     # Common interpolation and calculation for all models
     periods = np.array(ngaM.periods)
-    for ip in xrange( len(periods) ):
+    for ip in range( len(periods) ):
         if abs( period-periods[ip] ) < 0.0001:
             # period is within the periods list
             itmp = 1
@@ -179,7 +179,7 @@ def NGA08(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None, \
         values = np.array( values )
 
     if itmp == 0:
-        print period, 'do the interpolation for periods that is not in the period list of the NGA model'
+        print(period, 'do the interpolation for periods that is not in the period list of the NGA model')
         ind_low = (periods < period).nonzero()[0]
         ind_high = (periods > period).nonzero()[0]
         period_low = max( periods[ind_low] )
@@ -188,7 +188,7 @@ def NGA08(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None, \
         values_high = np.array( mapfunc( ngaM, Mw, Rjb, Vs30, period_high, rake, **kwds ) )
         N1,N2 = np.array( values_low).shape
         values = np.zeros( (N1,N2) )
-        for icmp in xrange( N2 ):
+        for icmp in range( N2 ):
             if icmp != 0:
                 # stardand values are in ln (g)
                 values[:,icmp] = logline( np.log(period_low), np.log(period_high), values_low[:,icmp], values_high[:,icmp], np.log(period) )
@@ -257,7 +257,7 @@ def NGA08test(nga):
     periods = TsDict[nga] 
     NT = len(periods) 
     Medians = []; SigmaTs = []
-    for ip in xrange( NT ): 
+    for ip in range( NT ): 
 	Ti = periods[ip] 
 	median, std, tau, sigma = NGA08( nga, M, Rjb, Vs30, Ti, Ftype=Ftype, W=W,Ztor=Ztor,dip=dip,Rrup=Rrup,Rx=Rx,Fhw=Fhw,Z10=Z10,Z25=Z25,VsFlag=VsFlag )
         Medians.append( median ) 
@@ -268,7 +268,7 @@ def NGA08test(nga):
 	os.mkdir(pth) 
     np.savetxt( pth + '/NGA08_SimpleTest%s.txt'%nga, output ) 
 
-    print output 
+    print(output) 
 
 
 # NGA 14 period list
@@ -305,9 +305,9 @@ def NGA14(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None, \
 	      'ASK':{'NewCoefs':None,'terms':(1,1,1,1,1,1,1)}}
     else:
 
-	if 'BSSA' not in NGAs.keys(): 
+	if 'BSSA' not in list(NGAs.keys()): 
 	    NGAs['BSSA'] = NGAs['BA'] 
-	if 'ASK' not in NGAs.keys(): 
+	if 'ASK' not in list(NGAs.keys()): 
 	    NGAs['ASK'] = NGAs['AS'] 
 	    
     dict1 = NGAs
@@ -316,10 +316,10 @@ def NGA14(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None, \
     # check the input period
     # Note: this function is better used at a given period with a set of other parameters (not with a set of periods)
     if period > 10.0 or 0<period<0.01:
-	print 'Positive period value should be within [0.01,10] for SA at corresponding periods'
+	print('Positive period value should be within [0.01,10] for SA at corresponding periods')
 	raise ValueError
     if period < 0 and period not in [-1,-2]:
-	print 'negative period should be -1,-2 for PGA and PGV'
+	print('negative period should be -1,-2 for PGA and PGV')
 	raise ValueError
 
     if model_name == 'BSSA':
@@ -343,7 +343,7 @@ def NGA14(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None, \
 
     # common interpolate for all models
     periods = np.array(ngaM.periods)
-    for ip in xrange( len(periods) ):
+    for ip in range( len(periods) ):
 	if abs( period-periods[ip] ) < 0.0001:
             # period is within the periods list
 	    itmp = 1
@@ -365,7 +365,7 @@ def NGA14(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None, \
         values_high = np.array( mapfunc( ngaM, Mw, Rjb, Vs30, period_high, rake, **kwds ) )
         N1,N2 = np.array(values_low).shape
         values = np.zeros( (N1,N2) )
-        for icmp in xrange( N2 ):
+        for icmp in range( N2 ):
             if icmp != 0:
                 # stardand values are in ln (g)
                 values[:,icmp] = logline( np.log(period_low), np.log(period_high), values_low[:,icmp], values_high[:,icmp], np.log(period) )
@@ -393,7 +393,7 @@ def BSSA14_validation(infile, outfile, iset):
     hdrs = open(infile,'r').readlines()[3].strip().split()
     inputs = {}
     data = np.loadtxt(infile,skiprows=4)
-    for ih in xrange(len(hdrs)): 
+    for ih in range(len(hdrs)): 
         hdr = hdrs[ih]
         inputs[hdr] = data[:,ih]
     regionDict = {'0':'GlobalCATW','1':'GlobalCATW','2':'ChinaTurkey','3':'ItalyJapan'}
@@ -407,7 +407,7 @@ def BSSA14_validation(infile, outfile, iset):
     Y1 = []; sig_lnY1 = []; tau1 = []; sigma1 = []
     Nls1 = []; Nls2 = []; Nls3 = []
     rake = None
-    for il in xrange(Nl): 
+    for il in range(Nl): 
         for key in ['T','M','Rjb','V30', 'mech', 'iregion', 'z1']: 
             cmd = "%s = inputs['%s'][%d]"%(key,key,il) 
             exec(cmd)
@@ -446,7 +446,7 @@ def BSSA14_validation(infile, outfile, iset):
     # plot
     fig = plt.figure(1) 
     texts = ['IM',r'$\sigma_T$',r'$\tau$',r'$\sigma$'] 
-    for iax in xrange( len(pyNGAs) ): 
+    for iax in range( len(pyNGAs) ): 
         ax = fig.add_subplot(2,2,iax+1)
         ax.plot(Nls1,pyNGAs[iax],'bx', label='pyNGA14')
         ax.plot(Nls3,pyNGAs08[iax],'r+', label='pyNGA08')
@@ -484,7 +484,7 @@ def NGA_Test():
 	periods = TsDict[nga] 
 	NT = len(periods) 
 	Medians = []; SigmaTs = []
-	for ip in xrange( NT ): 
+	for ip in range( NT ): 
 	    Ti = periods[ip] 
 	    median, std, tau, sigma = NGA08( nga, M, Rjb, Vs30, Ti, Ftype=Ftype, W=W,Ztor=Ztor,dip=dip,Rrup=Rrup,Rx=Rx,Fhw=Fhw,Z10=Z10,Z25=Z25,VsFlag=VsFlag )
 	    Medians.append( median ) 
@@ -500,7 +500,7 @@ def NGA_Test():
 	periods = TsDict14[nga] 
 	NT = len(periods) 
 	Medians = []; SigmaTs = []
-	for ip in xrange( NT ): 
+	for ip in range( NT ): 
 	    Ti = periods[ip] 
 	    median, std, tau, sigma = NGA14( nga, M, Rjb, Vs30, Ti, Ftype=Ftype, Mech=Mech, rake=rake, W=W,Ztor=Ztor,dip=dip,Rrup=Rrup,Rx=Rx,Fhw=Fhw,Z10=Z10,Z25=Z25,VsFlag=VsFlag )
 	    Medians.append( median ) 
@@ -519,7 +519,7 @@ def PlotTest():
     nga1 = ['BA','CB','CY','AS']
     nga2 = ['BSSA','CB','CY','ASK'] 
     fig = plt.figure(1)
-    for i in xrange(4):
+    for i in range(4):
         ax = fig.add_subplot(2,2,i+1)
         inputs = np.loadtxt(pth+'/NGA08_SimpleTest%s.txt'%nga1[i])
         inputs1 = np.loadtxt(pth+'/NGA14_SimpleTEst%s.txt'%nga2[i])
@@ -549,12 +549,12 @@ def BSSA14_test(Ti):
     # debug mode (show each term)
     
     IM, sigmaT, tau, sigma = BSSAnga(Mw,Rjb,Vs30,Ti,rake, **kwds)
-    print Ti, 'BSSA14:', IM, sigmaT, tau, sigma
+    print(Ti, 'BSSA14:', IM, sigmaT, tau, sigma)
     VsFlag = 0
     Z10=Z25=None
     dip = 90; Ztor = 3; W = 10; Fhw = 0
     median, std, tau, sigma = NGA14( 'BSSA', Mw, Rjb, Vs30, Ti, Ftype=Ftype, Mech=Mech, rake=rake, W=W,Ztor=Ztor,dip=dip,Rrup=Rrup,Fhw=Fhw,Z10=Z10,Z25=Z25,VsFlag=VsFlag )
-    print Ti, 'NGA14_BSSA:',median, std, tau, sigma
+    print(Ti, 'NGA14_BSSA:',median, std, tau, sigma)
     
    
 # ====================

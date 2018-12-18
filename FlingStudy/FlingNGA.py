@@ -40,7 +40,7 @@ stafiles = glob.glob( stapth + '*.ll' )
 stafile = stafiles[0]   # only one
 lines = open( stafile ).readlines()
 rlon = []; rlat = []; rnam = []
-for il in xrange( len( lines) ):
+for il in range( len( lines) ):
     spl = lines[il].strip().split()
     rlon.append( float( spl[0] ) )
     rlat.append( float( spl[1] ) )
@@ -67,7 +67,7 @@ vpth = srcpth + '/v%s/'%( vid )
 sfiles = glob.glob( vpth + '*.src' )
 lines = open( sfiles[0] ).readlines() 
 values = []
-for il in xrange( len(lines) ):
+for il in range( len(lines) ):
     spl = lines[il].strip().split()
     values.append( float( spl[2] ) )
 
@@ -133,7 +133,7 @@ if opt == 'ComputeDist':
 	    DistDict[key] = []
 
 	Rjb = []; Rrup = []; Rx =[]
-	for isite in xrange( len(rlon) ): 
+	for isite in range( len(rlon) ): 
 	    SiteGeom = [rlon[isite], rlat[isite], 0.0]
 	    # simple calculation  (short time)
 	    Rjb0, Rrup0, Rx0 = DistanceToSimpleFaultSurface(SiteGeom,FaultTrace1,UpperSeisDepth,LowerSeisDepth,AveDip)
@@ -216,14 +216,14 @@ if opt=='ComputePSA':
     Rjb = meta1.distance['Rjb']
 
     start_time = HourMinSecToSec(BlockName=opt)
-    print rake 
+    print(rake) 
 
     psaP = {}
-    for inga in xrange( len(NGA_models) ):
+    for inga in range( len(NGA_models) ):
 	nga = NGA_models[inga]
-	print 'Compute PSA for %s'%nga
+	print('Compute PSA for %s'%nga)
 	psaP[nga] = {} 
-	for ip in xrange( len(periods) ):
+	for ip in range( len(periods) ):
 	    T = periods[ip]
 	    if T == 0.0: 
 		Tp = -1.0   # PGA for Python
@@ -266,7 +266,7 @@ if opt == 'PlotPSA':
     ax3 = fig.add_subplot( 223 )
     #ax4 = fig.add_subplot( 224 )
     lines = []
-    for inga in xrange( len( NGA_models) ):
+    for inga in range( len( NGA_models) ):
 	nga = NGA_models[inga]
 	psa0 = meta.psaP[nga][T0]
 	line = ax1.loglog( Rjb, psa0, clrs[inga]+syms[inga] )

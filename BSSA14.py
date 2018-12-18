@@ -1,6 +1,6 @@
 #!/usr/bin/env python 
 
-from utils import *
+from .utils import *
 
 class BSSA14_nga:
     """
@@ -29,7 +29,7 @@ class BSSA14_nga:
         inputs = np.loadtxt(self.CoefFile,skiprows=2,delimiter=',')
         self.periods = inputs[:,0]
         coefs = inputs[:,1:]
-        for i in xrange( len(self.periods) ):
+        for i in range( len(self.periods) ):
             T1 = self.periods[i]
             Tkey = GetKey(T1)
             
@@ -43,7 +43,7 @@ class BSSA14_nga:
             
             # assign to Coefs
             self.Coefs[Tkey] = {}
-            for ikey in xrange(len(self.CoefKeys)):
+            for ikey in range(len(self.CoefKeys)):
                 key = self.CoefKeys[ikey]
                 cmd = "self.Coefs['%s']['%s'] = coefs[%i,%i]"%(Tkey,key,i,ikey)
                 exec(cmd)
@@ -78,9 +78,9 @@ class BSSA14_nga:
         self.region = Dregion
         self.country = country
         if self.region not in self.Dregions:
-            print '%s is not in %s'%(self.region, self.Dregions)
+            print('%s is not in %s'%(self.region, self.Dregions))
         if self.country not in self.countries: 
-            print '%s is not in %s'%(self.country, self.countries) 
+            print('%s is not in %s'%(self.country, self.countries)) 
             
         terms = CoefTerms['terms']
 	NewCoefs = CoefTerms['NewCoefs']
@@ -88,25 +88,25 @@ class BSSA14_nga:
 	if T in self.periods:
 	    self.T = T
 	else:
-	    print 'T is not in periods list, try to interpolate'
+	    print('T is not in periods list, try to interpolate')
 	    raise ValueError
 	
 	# check inputs
 	if self.M == None or self.M < 0:
-	    print 'Moment magnitude must be a postive number'
+	    print('Moment magnitude must be a postive number')
 	    raise ValueError
 	if self.Rjb == None or self.Rjb < 0:
-	    print 'Joyner-Boore distance must be a non-negative number'
+	    print('Joyner-Boore distance must be a non-negative number')
 	    raise ValueError
 	if self.Vs30 == None or self.Vs30 < 0:
-	    print 'Vs30 must be a positive number'
+	    print('Vs30 must be a positive number')
 	    raise ValueError
 
 	self.rake = rake
 	self.Mech = Mech
 	
 	if rake == None and Mech == None and Ftype == None:
-	    print 'either rake or (U,SS,NM,RV) should be provided'
+	    print('either rake or (U,SS,NM,RV) should be provided')
 	    raise ValueError
 	else: 
 	    if Ftype != None: 
@@ -134,7 +134,7 @@ class BSSA14_nga:
 	if NewCoefs != None:
 	    # only update Coefs given by NewCoefs (at self.T)
 	    Tkey = GetKey( self.T )
-	    NewCoefKeys = NewCoefs.keys()
+	    NewCoefKeys = list(NewCoefs.keys())
 	    for key in NewCoefKeys:
 		self.Coefs[Tkey][key] = NewCoefs[key]
 	
@@ -154,9 +154,9 @@ class BSSA14_nga:
     def ftype(self):
 	FT = rake2ftype_BA( self.rake )   # change in this version
 	if FT not in self.faults:
-	    print 'Invalid fault type!'
-	    print 'It should be in one of the following list:'
-	    print self.faults
+	    print('Invalid fault type!')
+	    print('It should be in one of the following list:')
+	    print(self.faults)
 	    raise ValueError
 	else:
 	    if FT == 'unspecified' or FT == 'U':
@@ -360,15 +360,15 @@ def BSSA14nga_test(T,CoefTerms):
     BSSAnga = BSSA14_nga()    # BA08nga instance
     if 1:
         values = mapfunc( BSSAnga, Mw, Rjb, Vs30, T, rake, **kwds )
-        for ivalue in xrange( len(values) ):
-            print Rjb[ivalue], values[ivalue]
-        print '=========================================='
+        for ivalue in range( len(values) ):
+            print(Rjb[ivalue], values[ivalue])
+        print('==========================================')
     else: 
         Rjb = 3.3  
         # debug mode (show each term)
         IM, sigmaT, tau, sigma = BSSAnga(Mw,Rjb,Vs30,T,rake, **kwds)
-        print IM, sigmaT, tau, sigma
-        print '=========================================='
+        print(IM, sigmaT, tau, sigma)
+        print('==========================================')
     return BSSAnga 
 
 if __name__ == '__main__':
@@ -382,10 +382,10 @@ if __name__ == '__main__':
     if 1:
         #for T in [-2, -1, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.5, 10.0]:    
         for T in [-1, 0.3, 1.0, 3.0]:
-            print 'BA PGA at %s second'%('%3.2f'%T)
+            print('BA PGA at %s second'%('%3.2f'%T))
             BSSAnga = BSSA14nga_test(T,CoefTerms)
     else: 
         T = 1.0
-        print 'BA PGA at %s second'%('%3.2f'%T)
+        print('BA PGA at %s second'%('%3.2f'%T))
         BSSAnga = BSSA14nga_test(T,CoefTerms)
         

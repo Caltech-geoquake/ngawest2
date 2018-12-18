@@ -62,7 +62,7 @@ class ValidationUtils:
 	
 	headers = 9*'%s   '%('Mw','Rrup','Rjb','Rx','Dip','W','Ztor','Vs30','Zsed')
 	Str = ''; xlabs = []
-	for ip in xrange( self.NT ):
+	for ip in range( self.NT ):
 	    Ti = self.periods[ip]
 	    if Ti == -1: 
 		Str += 'PGA    '
@@ -139,7 +139,7 @@ class ValidationUtils:
 	    if IMT[3:] == 'MEAS': 
 		VsFlag = 1
 
-	    tmp = np.loadtxt( file1, skiprows=1, usecols=range(0,9) )
+	    tmp = np.loadtxt( file1, skiprows=1, usecols=list(range(0,9)) )
 	    Mw = tmp[:,0]
 	    Rrup = tmp[:,1]
 	    Rjb = tmp[:,2]
@@ -150,11 +150,11 @@ class ValidationUtils:
 	    Vs30 = tmp[:,7]
 	    Zsed = tmp[:,8] 
 	    
-	    print '='*30
+	    print('='*30)
 	    start_time0 = HourMinSecToSec(BlockName='Test file %s starts...'%spl)
-	    print '='*30
+	    print('='*30)
 
-	    for ip in xrange( self.NT ):
+	    for ip in range( self.NT ):
 		Ti = self.periods[ip]
 		median, std, tau, sigma = NGA08(self.nga, Mw, Rjb, Vs30, Ti, rake=None, Mech=None, Ftype=Ftype, \
 						Rrup=Rrup, Rx=Rx, dip=Dip,W=W,Ztor=Ztor,Z25=Zsed,Z10=Zsed, \
@@ -166,10 +166,10 @@ class ValidationUtils:
 		    output = np.log(np.array(std) )   # in ln
 		tmp = np.c_[ tmp, output ] 
 	    
-	    print '='*30
+	    print('='*30)
 	    end_time0 = HourMinSecToSec(BlockName='Test file %s finished...'%spl)
 	    hour,min,sec = SecToHourMinSec(end_time0-start_time0,BlockName='Test file %s'%spl)
-	    print '='*30 + '\n'
+	    print('='*30 + '\n')
 
 
 	    # Write into files for comparison
@@ -177,10 +177,10 @@ class ValidationUtils:
 	    fid = open( outfile, 'w' )
 	    fid.write( '%s\n'%self.FileHeaders )
 	    Nr,Nc = tmp.shape
-	    for ir in xrange( Nr ): 
+	    for ir in range( Nr ): 
 		Str0 = ''
 		Str0 += 9*'%s  '%(Mw[ir],Rrup[ir],Rjb[ir],Rx[ir],Dip[ir],W[ir],Ztor[ir],Vs30[ir],Zsed[ir])
-		for ic in xrange( Nc-9 ):
+		for ic in range( Nc-9 ):
 		    Str0 += '%s   '%tmp[ir, ic+9]
 		Str0 = Str0 + '\n' 
 		fid.write( '%s'%Str0 ) 
@@ -205,14 +205,14 @@ class ValidationUtils:
 	    # Python computed NGA values
 	    file2 = outpth + '/' + spl 
 
-	    print 'Plot RMS of test file: ', spl
+	    print('Plot RMS of test file: ', spl)
 	    tmp = np.loadtxt( file1, skiprows=1 )
 	    
 	    NGAO = tmp[:,9:self.NT+9]
-	    NGAP = np.loadtxt( file2, skiprows=1, usecols=range(9,self.NT+9) ) 
+	    NGAP = np.loadtxt( file2, skiprows=1, usecols=list(range(9,self.NT+9)) ) 
 
             Error = []
-	    for ic in xrange( NGAO.shape[1] ): 
+	    for ic in range( NGAO.shape[1] ): 
 		Err = RMScalc( NGAP[:,ic], NGAO[:,ic],Ratio=Ratio ) 
 		Err = Err * (1*(Ratio==False)+100*(Ratio==True))  # convert to % if RMS is relative
 		Error.append(Err)
@@ -253,7 +253,7 @@ class ValidationUtils:
 	    # Python computed NGA values
 	    file2 = outpth + '/' + spl 
 
-	    print 'Plot differences of test file: ', spl
+	    print('Plot differences of test file: ', spl)
 	    tmp = np.loadtxt( file1, skiprows=1 )
             if xlab == 'Rjb':
 		xt = tmp[:,2]
@@ -268,12 +268,12 @@ class ValidationUtils:
 		Vs30 = tmp[:,7]
 		Zsed = tmp[:,8] 
 	    NGAO = tmp[:,9:self.NT+9]
-	    NGAP = np.loadtxt( file2, skiprows=1, usecols=range(9,self.NT+9) ) 
+	    NGAP = np.loadtxt( file2, skiprows=1, usecols=list(range(9,self.NT+9)) ) 
 	    
 	    fig = init_fig( num=1, figsize=(14,10), dpi=100 )
 	    fig.clf()
             axs = init_subaxes( fig, subs=(4,6), basic=(0.5,0.5,0.5,0.5))
-	    for ic in xrange( NGAO.shape[1] ): 
+	    for ic in range( NGAO.shape[1] ): 
 		ax = fig.add_axes( axs[ic] )
 		Err = NGAP[:,ic]-NGAO[:,ic] 
 		ax.plot( xt, Err, 'r.' )

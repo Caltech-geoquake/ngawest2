@@ -2,7 +2,7 @@
 """
 BA 08 NGA model
 """
-from utils import *
+from .utils import *
 class BA08_nga:
     """ 
     Class of NGA model of Boore and Atkinson 2008
@@ -119,7 +119,7 @@ class BA08_nga:
 	
 	# Old Coefs (period match)
 	self.Coefs = {}
-	for i in xrange(len(self.periods)):
+	for i in range(len(self.periods)):
 	    T1 = self.periods[i]
 	    Tkey = GetKey(T1)
 	    self.Coefs[Tkey] = {}
@@ -138,7 +138,7 @@ class BA08_nga:
 	    self.Coefs[Tkey]['blin'] = blins[i]
 	    self.Coefs[Tkey]['b1']   = b1s[i]
 	    self.Coefs[Tkey]['b2']   = b2s[i]
-	self.CoefKeys = self.Coefs[self.Coefs.keys()[0]].keys()
+	self.CoefKeys = list(self.Coefs[list(self.Coefs.keys())[0]].keys())
 
         self.fault = ['unspecified','strike-slip','normal','reverse','U','NM','SS','RV']
 
@@ -171,25 +171,25 @@ class BA08_nga:
 	if T in self.periods:
 	    self.T = T
 	else:
-	    print 'T is not in periods list, try to interpolate'
+	    print('T is not in periods list, try to interpolate')
 	    raise ValueError
 	
 	# check inputs
 	if self.M == None or self.M < 0:
-	    print 'Moment magnitude must be a postive number'
+	    print('Moment magnitude must be a postive number')
 	    raise ValueError
 	if self.Rjb == None or self.Rjb < 0:
-	    print 'Joyner-Boore distance must be a non-negative number'
+	    print('Joyner-Boore distance must be a non-negative number')
 	    raise ValueError
 	if self.Vs30 == None or self.Vs30 < 0:
-	    print 'Vs30 must be a positive number'
+	    print('Vs30 must be a positive number')
 	    raise ValueError
 
 	self.rake = rake
 	self.Mech = Mech
 	
 	if rake == None and Mech == None and Ftype == None:
-	    print 'either rake or (U,SS,NM,RV) should be provided'
+	    print('either rake or (U,SS,NM,RV) should be provided')
 	    raise ValueError
 	else: 
 	    if Ftype != None: 
@@ -219,7 +219,7 @@ class BA08_nga:
 	if NewCoefs != None:
 	    # only update Coefs given by NewCoefs (at self.T)
 	    Tkey = GetKey( self.T )
-	    NewCoefKeys = NewCoefs.keys()
+	    NewCoefKeys = list(NewCoefs.keys())
 	    for key in NewCoefKeys:
 		self.Coefs[Tkey][key] = NewCoefs[key]
 	
@@ -244,9 +244,9 @@ class BA08_nga:
 	FT = rake2ftype_BA( self.rake )
 
 	if FT not in self.fault:
-	    print 'Invalid fault type!'
-	    print 'It should be in one of the following list:'
-	    print self.fault
+	    print('Invalid fault type!')
+	    print('It should be in one of the following list:')
+	    print(self.fault)
 	    raise ValueError
 	else:
 	    if FT == 'unspecified' or FT == 'U':
@@ -409,7 +409,7 @@ class BA08_nga:
 	    else:
 		return (self.sigma_TM[ind], self.tau_M[ind], self.sigma0[ind])
 	except:
-	    print 'inputed T not found in the available periods list, try to do interpolation'
+	    print('inputed T not found in the available periods list, try to do interpolation')
 	    raise ValueError
 
 
@@ -429,8 +429,8 @@ def BA08nga_test(T,CoefTerms):
     kwds = {'Mech':None,'Ftype':Ftype,'AB11':AB11,'CoefTerms':CoefTerms}
     BAnga = BA08_nga()    # BA08nga instance
     values = mapfunc( BAnga, Mw, Rjb, Vs30, T, rake, **kwds )
-    for ivalue in xrange( len(values) ):
-	print Rjb[ivalue], values[ivalue]
+    for ivalue in range( len(values) ):
+	print(Rjb[ivalue], values[ivalue])
 
 
 if __name__ == '__main__':
@@ -440,13 +440,13 @@ if __name__ == '__main__':
     T = 10.0; NewCoefs = {'c1':-0.1,'c2':-0.1000}  # use the updated one
     T = 0.3; NewCoefs = None     # pure one
 
-    print 'BA SA at %s second'%('%3.2f'%T)
+    print('BA SA at %s second'%('%3.2f'%T))
     CoefTerms={'terms':(1,1,1),'NewCoefs':NewCoefs}
     BAnga = BA08nga_test(T,CoefTerms)
     #BAnga = BA08nga_test(T,CoefTerms)
 
     T = -1.0
     CoefTerms={'terms':(1,1,1),'NewCoefs':None}
-    print 'BA PGA at %s second'%('%3.2f'%T)
+    print('BA PGA at %s second'%('%3.2f'%T))
     BAnga = BA08nga_test(T,CoefTerms)
 

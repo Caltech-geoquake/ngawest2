@@ -18,11 +18,11 @@ def cpt_sqrt( a,b ):
 def RMScalc( V1,V2, Ratio=True ): 
     N = len(V1) 
     if len(V2) != N: 
-	print 'length of array2 should be the same as array1'
+	print('length of array2 should be the same as array1')
 	raise ValueError
     else:
 	if 0 in V2: 
-	    print 'elements in array2 should not be zeros'
+	    print('elements in array2 should not be zeros')
 	    raise ValueError
 	if Ratio:
 	    Error = (V1-V2)/V2
@@ -48,7 +48,7 @@ def HourMinSecToSec(BlockName=None):
     hour, min, sec = time.localtime()[3:6]
     sec1 = hour*60*60 + min*60 + sec
     if  BlockName != None:
-	print '%s'%BlockName
+	print('%s'%BlockName)
     return sec1
 
 def SecToHourMinSec(sec1,BlockName=None):
@@ -57,7 +57,7 @@ def SecToHourMinSec(sec1,BlockName=None):
     sec = sec1-hour*3600-min*60
     if BlockName == None:
 	BlockName = 'the above block'
-    print 'Time cost of %s is %s hr %s min %s sec'%(BlockName,hour,min,sec)
+    print('Time cost of %s is %s hr %s min %s sec'%(BlockName,hour,min,sec))
     return hour,min,sec        
 
 
@@ -87,7 +87,7 @@ def load( f, d=None ):
 	f = open( os.path.expanduser(f) )   # get the file object
     if d is None:
 	d = {}
-    exec f in d
+    exec(f, d)
     return namespace( d ) 
 
 
@@ -107,7 +107,7 @@ def save( fd, d, expand=None, keep=None, header=''):
 	    out += '%s = %r\n' % (k, d[k])
 
     for k in expand:
-        print 'test expand'
+        print('test expand')
 	if k in d:
             if type( d[k] ) is tuple:
                 out += k + ' = (\n'
@@ -143,7 +143,7 @@ def mapfunc(func,*args,**kwds):
     # arguments
     na = len(args)    # number of arguments
     args0 = {}
-    for ina in xrange( na ):
+    for ina in range( na ):
 	key1 = '%s'%ina
 	args0[key1] = {}
 	try:
@@ -159,7 +159,7 @@ def mapfunc(func,*args,**kwds):
 		    args0[key1][key2] = args[ina]
 		else:
 		    # [1,2,...],['a','b',...],['AB','CD',...] case
-		    for il in xrange( tmp ):
+		    for il in range( tmp ):
 			key2 = '%s'%il
 			args0[key1][key2] = args[ina][il]
 	except:
@@ -170,7 +170,7 @@ def mapfunc(func,*args,**kwds):
     del(args)
 
     # keywords
-    keys = kwds.keys()
+    keys = list(kwds.keys())
     nk = len( keys )
      
     if nk != 0:
@@ -191,7 +191,7 @@ def mapfunc(func,*args,**kwds):
 			kwds0[key1][key2] = kwds[key1]
 		    else:
 			# [1,2,...],['a','b',...],['AB','CD',...] case
-			for il in xrange( tmp ):
+			for il in range( tmp ):
 			    key2 = '%s'%il
 			    kwds0[key1][key2] = kwds[key1][il]
 	    except:
@@ -202,47 +202,47 @@ def mapfunc(func,*args,**kwds):
 
 	# get the maximum list length
 	nl = 0; nla = 0; nlk = 0
-	for ina in xrange( na ):
+	for ina in range( na ):
 	    key1 = '%s'%ina
-	    nla0 = len( args0[key1].keys() )
+	    nla0 = len( list(args0[key1].keys()) )
 	    if nla0 >= nla:
 		nla = nla0
-	for ink in xrange( nk ):
+	for ink in range( nk ):
 	    key1 = keys[ink]
-	    nlk0 = len( kwds0[key1].keys() )
+	    nlk0 = len( list(kwds0[key1].keys()) )
 	    if nlk0 >= nlk:
 		nlk = nlk0
 	nl = max( nlk, nla )
 	
 	# check input args and kwds
-	for ina in xrange( na ):
+	for ina in range( na ):
 	    key1 = '%s'%ina
-	    nl0 = len(args0[key1].keys())
+	    nl0 = len(list(args0[key1].keys()))
 	    if nl0 != 1 and nl0 < nl:
-		print 'input argument length error!'
+		print('input argument length error!')
 		raise ValueError
 	    
-	for ink in xrange( nk ):
+	for ink in range( nk ):
 	    key1 = keys[ink]
-	    nl0k = len(kwds0[key1].keys())  # number of elements for each arguments (for map)
+	    nl0k = len(list(kwds0[key1].keys()))  # number of elements for each arguments (for map)
 	    if nl0k != 1 and nl0k < nl:
-		print 'input kwds element length error!'
+		print('input kwds element length error!')
 		raise ValueError
 
 	# map function
 	value = []
-	for il in xrange( nl ):
+	for il in range( nl ):
 	    arg0 = []; kwd0 = {}
-	    for ina in xrange( na ):
+	    for ina in range( na ):
 		key1 = '%s'%ina
-		nl0 = len( args0[key1].keys() )
+		nl0 = len( list(args0[key1].keys()) )
 		if nl0 == 1:
 		    element = args0[key1]['0']
 		else:
 		    key2 = '%s'%il
 		    element = args0[key1][key2]
 		arg0.append(element)
-	    for ink in xrange( nk ):
+	    for ink in range( nk ):
 		nlk = len(kwds0[keys[ink]])  # number of elements for each arguments (for map)
 		key1 = keys[ink]
 		if nlk == 1:
@@ -255,27 +255,27 @@ def mapfunc(func,*args,**kwds):
     else:
 	# No keywords input (use the default of the original function)
 	nl = 0 
-	for ina in xrange( na ):
+	for ina in range( na ):
 	    key1 = '%s'%ina
-	    nl0 = len( args0[key1].keys() )
+	    nl0 = len( list(args0[key1].keys()) )
 	    if nl0 >= nl:
 		nl = nl0 
 
 	# check input args 
-	for ina in xrange( na ):
+	for ina in range( na ):
 	    key1 = '%s'%ina
-	    nl0 = len(args0[key1].keys())
+	    nl0 = len(list(args0[key1].keys()))
 	    if nl0 != 1 and nl0 < nl:
-		print 'input argument length error!'
+		print('input argument length error!')
 		raise ValueError
 	    
 	# map function
 	value = []
-	for il in xrange( nl ):
+	for il in range( nl ):
 	    arg0 = []; kwd0 = {}
-	    for ina in xrange( na ):
+	    for ina in range( na ):
 		key1 = '%s'%ina
-		nl0 = len( args0[key1].keys() )
+		nl0 = len( list(args0[key1].keys()) )
 		if nl0 == 1:
 		    element = args0[key1]['0']
 		else:
@@ -358,7 +358,7 @@ def RakeBin(rakes):
     for ig,groupname in enumerate( groupnames.keys() ):
 	group[groupname] = []
 
-    for ir in xrange( len(rakes) ):
+    for ir in range( len(rakes) ):
 	rake = rakes[ir]
 	
 	if rake>180. or rake < -180. or rake == None:
@@ -397,7 +397,7 @@ def Vs30Bin(Vs30s):
     for ikey, key in enumerate( groupnames.keys() ):
 	group[key] = []
     
-    for iv in xrange( len( Vs30s ) ):
+    for iv in range( len( Vs30s ) ):
 	Vs30 = Vs30s[iv] 
 	if Vs30 >= 1500.:
 	    group['A'].append( Vs30 )
@@ -430,7 +430,7 @@ def rake2ftype_BA(rake):
 	elif -150. <= rake <= -30.:
 	    ftype = 'NM' # normal
 	else:
-	    print 'Wrong rake angle!'
+	    print('Wrong rake angle!')
 	    raise ValueError
     return ftype
 
@@ -471,7 +471,7 @@ def calc_dip( rake ):
         dip angle in degree
     """
     if abs(rake) > 180: 
-	print 'rake angle should be within -180 and 180'
+	print('rake angle should be within -180 and 180')
 	raise ValueError
     
     if abs(rake)<=30 or abs(rake)>=150:
@@ -489,10 +489,10 @@ def calc_Zhypo(M,rake):
     When Ztor is unknown from input models
     """
     if M < 0:
-	print 'Magnitude should be larger than 0'
+	print('Magnitude should be larger than 0')
 	raise ValueError
     if abs(rake) > 180:
-	print 'rake angle should be within -180 and 180'                     
+	print('rake angle should be within -180 and 180')                     
 	raise ValueError
     
     if abs(rake) < 30 or abs(rake) > 150:
@@ -508,12 +508,12 @@ def calc_W(M,rake):
     Compute fault width when not specified by input
     """
     if M < 0:
-	print 'Magnitude should be larger than 0'
+	print('Magnitude should be larger than 0')
 	raise ValueError
     
     # In R
     if abs(rake) > 180:
-	print 'rake angle should be within -180 and 180'                  
+	print('rake angle should be within -180 and 180')                  
 	raise ValueError
     if abs(rake) < 30 or abs( rake ) > 150:
 	W = 10 ** (-0.76+0.27*M)
@@ -534,13 +534,13 @@ def calc_Ztor(W,dip,Zhypo):
         dip should be in degree
     """
     if dip <= 0 or dip > 90:
-	print 'dip angle should be with in (0,90]'
+	print('dip angle should be with in (0,90]')
 	raise ValueError
     if W <= 0:
-	print 'Fault width should be larger than 0'
+	print('Fault width should be larger than 0')
 	raise ValueError
     if Zhypo < 0:
-	print 'Zhypo should be larger than 0'
+	print('Zhypo should be larger than 0')
 	raise ValueError
     Ztor = max( Zhypo-0.6*W*np.sin( dip * np.pi/ 180 ), 0 )
     return Ztor
@@ -554,19 +554,19 @@ def calc_Rx(Rjb, Ztor, W, dip, azimuth, Rrup=None):
     Compute distance parameter Rx from other inputs
     """
     if Rjb < 0:
-	print 'Joyer-Boore distance Rjb should be larger than 0'
+	print('Joyer-Boore distance Rjb should be larger than 0')
 	raise ValueError
     if Ztor < 0:
-	print 'Ztor should be larger than 0'
+	print('Ztor should be larger than 0')
 	raise ValueError
     if W <= 0:
-	print 'Fault width should be larger than 0'
+	print('Fault width should be larger than 0')
 	raise ValueError
     if dip<=0 or dip > 90:
-	print 'dip angle should be (0,90]'
+	print('dip angle should be (0,90]')
 	raise ValueError
     if abs( azimuth ) > 180.0:
-	print 'azimuth should be width in -180.0 and 180.0'
+	print('azimuth should be width in -180.0 and 180.0')
 	raise ValueError
 
     d = dip * np.pi/180    # degree to radius 
@@ -604,16 +604,16 @@ def calc_Rrup( Rx, Ztor, W, dip, azimuth, Rjb=None ):
     Compute the closest distance from site the the surface the fault
     """
     if Ztor < 0:
-	print 'Ztor should be larger than 0'
+	print('Ztor should be larger than 0')
 	raise ValueError
     if W <= 0:
-	print 'Fault width should be larger than 0'
+	print('Fault width should be larger than 0')
 	raise ValueError
     if dip<=0 or dip > 90:
-	print 'dip angle should be (0,90]'
+	print('dip angle should be (0,90]')
 	raise ValueError
     if abs( azimuth ) > 180:
-	print 'azimuth should be width in -180 and 180'
+	print('azimuth should be width in -180 and 180')
 	raise ValueError
     
     d = dip * np.pi/180    # degree to radius 
@@ -637,7 +637,7 @@ def calc_Rrup( Rx, Ztor, W, dip, azimuth, Rjb=None ):
 	Ry = 0
     elif azimuth == 0 or azimuth == 180 or azimuth == -180:
 	if Rjb == None:
-	    print 'Rjb cannot be None in the case azimuth == 0 or azimuth == 180 or azimuth == -180'
+	    print('Rjb cannot be None in the case azimuth == 0 or azimuth == 180 or azimuth == -180')
 	    raise ValueError
 	else:
 	    Ry = Rjb
@@ -696,8 +696,8 @@ def calc_distances(SiteGeo, Dims, Mech, ProjDict, Rrup=False, Rx=False):
     # compute Rjb using fault and  site locations and get the azimuth of all sites for later use to compute Rx
     Nsta = len(rlon)
     Rjb = []; Rrup = [];  azimuth = []
-    print 'Computing Rjb, and Rrup, and azimuth...'
-    for ista in xrange( Nsta ):
+    print('Computing Rjb, and Rrup, and azimuth...')
+    for ista in range( Nsta ):
 	rx0 = rx[ista] / 1000.
 	ry0 = ry[ista] / 1000.
 	
@@ -706,7 +706,7 @@ def calc_distances(SiteGeo, Dims, Mech, ProjDict, Rrup=False, Rx=False):
 	    Rjb.append( 0 )
 	else:
 	    distS = []
-	    for iloc in xrange( Nloc ):
+	    for iloc in range( Nloc ):
 		dx = fxxS1d[iloc] - rx0
 		dy = fyy1d[iloc] - ry0 
 		distS.append( np.sqrt( dx**2 + dy**2 ) )
@@ -714,7 +714,7 @@ def calc_distances(SiteGeo, Dims, Mech, ProjDict, Rrup=False, Rx=False):
 	
 	# Rrup
 	dist = []
-	for iloc in xrange( Nloc ):
+	for iloc in range( Nloc ):
 	    dx = fxx1d[iloc] - rx0 
 	    dy = fyy1d[iloc] - ry0 
 	    dist.append( np.sqrt( dx**2 + dy**2 +  fzz1d[iloc]**2 ) )
@@ -888,7 +888,7 @@ def CheckPointInPolygon(point, verts):
     verts = np.array( verts )
     dim = verts.shape[1] 
     if Ndim != dim:
-	print 'point and shape should be defined with two coordinates'
+	print('point and shape should be defined with two coordinates')
 	raise ValueError
     
     # test point
@@ -900,7 +900,7 @@ def CheckPointInPolygon(point, verts):
     nvert = len(vertx) 
     check = False
     j = nvert - 1 
-    for i in xrange( nvert ): 
+    for i in range( nvert ): 
 	c1 = verty[i]>testy
 	c2 = verty[j]>testy 
 	factor = (vertx[j]-vertx[i])*(testy-verty[i])/(verty[j]-verty[i]) + vertx[i] 
@@ -1127,13 +1127,13 @@ def minDistToLineSeg2D( loc, segs, Fast=False, Debug=False ):
     Npoints = len(segs) 
     minDist = 1000.
     if Debug: 
-	print 'minDistToLineSeg2D Debug'
+	print('minDistToLineSeg2D Debug')
     for iseg in range(1,Npoints): 
 	p1 = segs[iseg-1] 
 	p2 = segs[iseg]
 	dist = abs( distToLineSeg2D(p1,p2,loc,Fast=Fast) ) 
 	if Debug: 
-	    print 'LineSeg %s'%iseg, dist 
+	    print('LineSeg %s'%iseg, dist) 
 	
 	if dist <= minDist: 
 	    minDist = dist 
@@ -1206,7 +1206,7 @@ def minDistToLineSeg3D( loc, segs, Rscale=1.0, Debug=False ):
     Npoints = len(segs) 
     minDist = 1000.
     if Debug: 
-	print 'minDistToLineSeg3D Debug'
+	print('minDistToLineSeg3D Debug')
     for iseg in range(1,Npoints): 
 	p1 = segs[iseg-1] 
 	p2 = segs[iseg]
@@ -1214,7 +1214,7 @@ def minDistToLineSeg3D( loc, segs, Rscale=1.0, Debug=False ):
 	a, hD, vD, az = LonLatToAngleDistance(loc,Ploc,CalcRadius=False,CalcDist=True,CalcAzimuth=False,Fast=True)
 	dist = np.sqrt( hD**2+vD**2 )
 	if Debug:
-	    print 'Line seg %s of %s:'%(iseg,Npoints-1), Ploc, hD, vD
+	    print('Line seg %s of %s:'%(iseg,Npoints-1), Ploc, hD, vD)
 	if dist <= minDist: 
 	    minDist = dist 
     
@@ -1269,7 +1269,7 @@ def minDistToSurfSeg( loc, segs, Rscale=1.0, Debug=False ):
     Nseg = len(segs) 
     minDist = 1000.
     if Debug: 
-	print 'minDistToSurfSeg Debug'
+	print('minDistToSurfSeg Debug')
 	Ppoints = []
 
     for iseg in range(Nseg):
@@ -1290,7 +1290,7 @@ def minDistToSurfSeg( loc, segs, Rscale=1.0, Debug=False ):
 	    minDist = dist 
 	
 	if Debug:
-	    print 'Segment %s: '%iseg, dist, check, Ppoint
+	    print('Segment %s: '%iseg, dist, check, Ppoint)
     
     if Debug: 
 	return minDist, Ppoints
@@ -1386,14 +1386,14 @@ def SimpleFaultSurface(FaultTrace, UpperSeisDepth, LowerSeisDepth, AveDip, GridS
 	Ncol = int(hD0 / daa + 1)
 	Nrow = int(vD / np.sin(AveDip) / ddd + 1)
         
-	for irow in xrange( Nrow ): 
+	for irow in range( Nrow ): 
 	    vector0 = [az+np.pi/2, ddd*np.cos(AveDip), ddd*np.sin(AveDip)]
 	    if irow == 0: 
 		FaultDD = FaultTrace[0] 
 	    else: 
 		FaultDD = EndLocation( FaultDD, vector0 ) 
 	    FaultAA = [FaultDD,]
-	    for icol in xrange( 1, Ncol ): 
+	    for icol in range( 1, Ncol ): 
 		vector1 = [az, daa, 0.0]
 		FaultAA.append( EndLocation( FaultAA[icol-1],vector1 ) )
 	    FaultGeom.append( FaultAA ) 
@@ -1404,7 +1404,7 @@ def SimpleFaultSurface(FaultTrace, UpperSeisDepth, LowerSeisDepth, AveDip, GridS
 	# multiple segments 
 	azs = []; hDs = []; vDs = []      # or strikes
 	AveStrike = 0
-	for iseg in xrange( Nsegs ): 
+	for iseg in range( Nsegs ): 
 	    loc1 = np.array(FaultTrace[iseg])
 	    loc2 = np.array(FaultTrace[iseg+1])
 	    a,hD0,vD0,az = LonLatToAngleDistance( loc1, loc2, CalcRadius=False, CalcAzimuth=True, CalcDist=True )
@@ -1427,7 +1427,7 @@ def SimpleFaultSurface(FaultTrace, UpperSeisDepth, LowerSeisDepth, AveDip, GridS
 	else: 
 	    # no grid generation (just get four corner points)
 	    FaultTraceSeg = []
-	    for iseg in xrange( Nsegs ): 
+	    for iseg in range( Nsegs ): 
 		loc1 = FaultTrace[iseg]
 		loc2 = FaultTrace[iseg+1]
 		vector = [AveStrike+np.pi/2.,hD,vD]
@@ -1435,7 +1435,7 @@ def SimpleFaultSurface(FaultTrace, UpperSeisDepth, LowerSeisDepth, AveDip, GridS
 		loc4 = EndLocation( loc1, vector ) 
 		FaultTraceSeg.append( [loc1,loc2,loc3,loc4] )
 	    FaultTrace1 = []
-	    for ipoint in xrange( Npoints ): 
+	    for ipoint in range( Npoints ): 
 		loc0 = FaultTrace[ipoint] 
 		vector = [AveStrike+np.pi/2.,hD,vD]
 		loc00 = EndLocation( loc0, vector )
@@ -1447,9 +1447,9 @@ def SimpleFaultSurface(FaultTrace, UpperSeisDepth, LowerSeisDepth, AveDip, GridS
         # loop over segments 
 	Nrow = int(vD/np.sin(AveDip)/ddd + 1)
 	Ncol = []
-	for iseg in xrange( Nsegs ): 
+	for iseg in range( Nsegs ): 
 	    Ncol.append(int(hDs[iseg] / daa+1)) 
-	for irow in xrange( Nrow ): 
+	for irow in range( Nrow ): 
 	    vector0 = [AveStrike+np.pi/2, ddd*np.cos(AveDip), ddd*np.sin(AveDip)]
 	    if irow == 0: 
 		FaultDD = FaultTrace[0] 
@@ -1457,8 +1457,8 @@ def SimpleFaultSurface(FaultTrace, UpperSeisDepth, LowerSeisDepth, AveDip, GridS
 		FaultDD = EndLocation( FaultDD, vector0 ) 
 	    FaultAA = [FaultDD,]
 	    icount = 0
-	    for iseg in xrange( Nsegs ):
-		for icol in xrange( 1, Ncol[iseg] ):
+	    for iseg in range( Nsegs ):
+		for icol in range( 1, Ncol[iseg] ):
 		    vector1 = [azs[iseg], daa, 0.0]
 		    loc0 = EndLocation( FaultAA[icount], vector1 ) 
 		    FaultAA.append( loc0 )
@@ -1486,7 +1486,7 @@ def srfFaultSurfaceExtract(SRFfile):
     dims = []
     dips = []
     ztors = [] 
-    for iseg in xrange( Nseg ):
+    for iseg in range( Nseg ):
 	il0 = 2*iseg + 2  # fault geometry info
 	spl = lines[il0].strip().split()
 	lon0, lat0, L, W, Ncol, Nrow = np.array( spl, 'f' )
@@ -1522,7 +1522,7 @@ def srfFaultSurfaceExtract(SRFfile):
 	il0 = il0 + dl + 1   # import (similar to the segments jump) ...
     
     Nrow1 = 0; Ncol1 = 0 
-    for iseg in xrange( Nseg ): 
+    for iseg in range( Nseg ): 
 	Nrow1 += dims[iseg][1]
 	Ncol1 += dims[iseg][0]
     
@@ -1587,7 +1587,7 @@ def DistanceX(SiteGeom, FaultTrace1, AveStrike=None, Fast=True, DealRx='Extensio
     Loc3 = EndLocation( Loc1, vector ) 
     Loc4 = EndLocation( Loc2, vector ) 
     verts = []; segs = []
-    for ipoint in xrange( Npoints ): 
+    for ipoint in range( Npoints ): 
 	verts.append( FaultTrace1[ipoint] )
 	segs.append( FaultTrace1[ipoint] ) 
     verts.append( Loc4 )  
@@ -1619,7 +1619,7 @@ def DistanceX(SiteGeom, FaultTrace1, AveStrike=None, Fast=True, DealRx='Extensio
 	    segs = []    # to form the extend fault trace segments
 	    verts.append(Loc1) 
 	    segs.append(Loc1) 
-	    for ipoint in xrange( Npoints ): 
+	    for ipoint in range( Npoints ): 
 		verts.append( FaultTrace1[ipoint] ) 
 		segs.append( FaultTrace1[ipoint] )
 	    verts.append( Loc2 ) 
@@ -1630,7 +1630,7 @@ def DistanceX(SiteGeom, FaultTrace1, AveStrike=None, Fast=True, DealRx='Extensio
 	    if Debug:
 		# Test extended fault trace and fault surface projection (plot) 
 		import matplotlib.pyplot as plt 
-		print 'Site is within the Extended Fault Surface projection:',check
+		print('Site is within the Extended Fault Surface projection:',check)
 		verts1 = np.array( verts ) 
 		fig = plt.figure(10) 
 		ax = fig.add_subplot( 111 ) 
@@ -1694,7 +1694,7 @@ def DistanceToSimpleFaultSurface(SiteGeom, FaultTrace1, UpperSeisDepth, LowerSei
 	    Rx = None 
 
 	if Debug: 
-	    print 'Site is within surface projection: ',check
+	    print('Site is within surface projection: ',check)
 	    import matplotlib.pyplot as plt 
 	    from mpl_toolkits.mplot3d import Axes3D 
 	    FaultTrace = np.array( FaultTrace )
@@ -1774,16 +1774,16 @@ def DistanceToEvenlyGriddedSurface(SiteGeo, FaultGeo, Fast = True, RrupCalc=True
     # check site is within the surface projection of the fault 
     verts = []
     irow = 0
-    for icol in xrange( Ncol ): 
+    for icol in range( Ncol ): 
 	verts.append( FaultGeo[irow,icol][:2].tolist() )
     icol = 0
-    for irow in xrange( Nrow ): 
+    for irow in range( Nrow ): 
 	verts.append( FaultGeo[irow,icol][:2].tolist() )
     irow = Nrow-1
-    for icol in xrange( Ncol ): 
+    for icol in range( Ncol ): 
 	verts.append( FaultGeo[irow,icol][:2].tolist() )
     icol = Ncol-1 
-    for irow in xrange( Nrow ): 
+    for irow in range( Nrow ): 
 	verts.append( FaultGeo[irow,icol][:2].tolist() )
     check = CheckPointInPolygon( SiteGeo[:2], verts )
     if check: 
@@ -1793,14 +1793,14 @@ def DistanceToEvenlyGriddedSurface(SiteGeo, FaultGeo, Fast = True, RrupCalc=True
     
     if 0: 
 	DDtmp = 0
-	for irow in xrange( Nrow-1 ): 
+	for irow in range( Nrow-1 ): 
 	    loc1 = FaultGeo[irow,0] 
 	    loc2 = FaultGeo[irow+1,0] 
 	    alpha, hD, vD, az = LonLatToAngleDistance(loc1, loc2, CalcRadius=False, CalcDist=True, Fast=Fast) 
 	    DDtmp += DDtmp + hD 
 	DownDipGridSpace = DDtmp / (Nrow-1)
 	AStmp = 0
-	for icol in xrange( Ncol-1 ): 
+	for icol in range( Ncol-1 ): 
 	    loc1 = FaultGeo[0,icol] 
 	    loc2 = FaultGeo[0,icol+1] 
 	    alpha, hD, vD, az = LonLatToAngleDistance(loc1, loc2, CalcRadius=False, CalcDist=True, Fast=True) 
@@ -1836,7 +1836,7 @@ def calc_Z1(Vs30,Z1model):
     return in km
     """
     if Vs30 < 0:
-	print ' Vs30 should be larger than 0'
+	print(' Vs30 should be larger than 0')
 	raise ValueError
 
     if Z1model == 'AS':
@@ -1857,16 +1857,16 @@ def calc_Z25( Vs30, Z1=None, Z15=None, Z1model='CY' ):
     """
 
     if Vs30 == None and Z1== None and Z15==None:
-	print 'Either Vs30, Z1.0 or Z1.5 should be specified'
+	print('Either Vs30, Z1.0 or Z1.5 should be specified')
 	raise ValueError
     if Vs30 != None and Vs30 < 0:
-	print 'Vs30 should be larger than 0'
+	print('Vs30 should be larger than 0')
 	raise ValueError
     if Z1 != None and Z1 < 0:
-	print 'Z1 should be larger than 0'
+	print('Z1 should be larger than 0')
 	raise ValueError
     if Z15 != None and Z15 < 0:
-	print 'Z15 should be larger than 0'
+	print('Z15 should be larger than 0')
 	raise ValueError
     if Z15 != None:	
 	Z25 = 636 + 1.549*Z15
@@ -1906,12 +1906,12 @@ def GetIntraInterResiduals(residualT, EQID, sigmaT, tau, sigma, AS=None):
     Events = group_list( EQID )
     Neq = len(Events)
     ID = []
-    for ieq in xrange( Neq ):
+    for ieq in range( Neq ):
 	ID.append( Events[ieq][2] )
 
     # Compute residuals
     eta_EQinter = []
-    for ieq in xrange( Neq ):
+    for ieq in range( Neq ):
 	index = (np.array(RID)==ID[ieq]).nonzero()[0]
 	N_EQ = len(index)
         
@@ -1939,11 +1939,11 @@ if __name__ == '__main__':
 	# test Vs30 and Z10, Z25 calculation
 	Vs30 = 863
 	Z10 = calc_Z1( Vs30, 'CY' ) 
-	print Z10 
+	print(Z10) 
 	Z10 = calc_Z1( Vs30, 'AS' ) 
-	print Z10 
+	print(Z10) 
 	Z25 = calc_Z25(Vs30, Z1model='CY') 
-	print Z25 
+	print(Z25) 
 
 
     if 0:
@@ -1958,14 +1958,14 @@ if __name__ == '__main__':
 	x2,y2 = 1,1
 	px,py = 1,0 
 	dist,PP = ptToLine2D( x1,y1,x2,y2,px,py ) 
-	print dist 
-	print PP 
+	print(dist) 
+	print(PP) 
 
     if 0:
 	point0 = [1,1,1]
 	points = [[0,0,1],[0,1,0],[-1.0,0.5,0.5]] 
 	dist, point1 = ptToSurf3D( point0, points ) 
-	print dist, point1 
+	print(dist, point1) 
     
     if 0: 
 	point0 = [0.5,0.5,1] 
@@ -1973,7 +1973,7 @@ if __name__ == '__main__':
 	point1 = [0,0,0]
 	point2 = [0,1,0]
 	dist, Ploc = ptToLineSeg3D(point0, point1, point2)
-	print dist, Ploc
+	print(dist, Ploc)
     if 0: 
 	point0 = [-118.286, 34.0192,0.0]
 	point1 = [-118.23476100000001, 34.067455000000002, -3.0] 
@@ -1981,7 +1981,7 @@ if __name__ == '__main__':
 	dist_tmp,Ploc = ptToLineSeg3D(point0, point1, point2,Rscale=111.12)
 	a, hD, vD, az = LonLatToAngleDistance(point0,Ploc,CalcRadius=False,CalcDist=True,CalcAzimuth=False,Fast=True)
 	dist = np.sqrt(hD**2+vD**2)
-	print dist, Ploc 
+	print(dist, Ploc) 
 	
     if 0: 
 	point0 = [-117.8,33.5,0.0] 
@@ -1989,4 +1989,4 @@ if __name__ == '__main__':
 	point2 = [-118.0,34,3.0]
 	point3 = [-117.5,33,15.0]
 	dist = ptToSurf3D(point0, point1, point2, point3)
-	print dist 
+	print(dist) 

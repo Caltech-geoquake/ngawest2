@@ -23,7 +23,7 @@ plotpth = '/Users/fengw/local/pylib/pynga/BBP/plots/'
 sfile = './inputs/bbp_validation_part_b_scenario_src_files'
 lines = open( sfile ).readlines()
 values = []
-for il in xrange( len(lines) ):
+for il in range( len(lines) ):
     spl = lines[il].strip().split()
     values.append( float( spl[1] ) )
 M, L, dl, W, dw, ztor, strike, rake, dip, lat0, lon0, hypoAS, hypoDD = values[:13]
@@ -49,7 +49,7 @@ SiteRjb = data[:,4]
 
 if 0:
     SiteRrup0 = []; SiteRx0 = []; SiteRjb0 = []
-    for isite in xrange( len(SiteLon) ): 
+    for isite in range( len(SiteLon) ): 
 	SiteGeom = [SiteLon[isite], SiteLat[isite], 0.0]
 	FaultTrace1, UpperSeisDepth, LowerSeisDepth, AveDip, das, ddd = FaultTraceGen( origin, Dims, Mech )
 	Rjb, Rrup, Rx = DistanceToSimpleFaultSurface(SiteGeom,FaultTrace1,UpperSeisDepth,LowerSeisDepth,AveDip)    # in km 
@@ -81,7 +81,7 @@ clrs = ['r','g','b','k']
 # =====================
 # 4. Compute PSA for the given station 
 # =====================
-for ip in xrange( len(periods) ):
+for ip in range( len(periods) ):
     period = periods[ip] 
     if period < 0:
 	if period == -1: 

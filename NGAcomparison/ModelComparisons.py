@@ -57,11 +57,11 @@ if opt == 'period':
         fig.text(0.1,0.95,title,fontsize=16)
         IMs1 = []
         stds1 = []
-        for ip in xrange(len(Ts)):
+        for ip in range(len(Ts)):
             Ti = Ts[ip]   
             IMs = []
             stds = []
-            for inga in xrange(4):
+            for inga in range(4):
                 ax = fig.add_subplot(2,2,inga+1)
                 nga1 = NGA08_models[inga]                
                 median1, std1, tau, sigma = NGA08( nga1, Mw, Rjb, Vs30, Ti, Ftype=Ftype, rake=rake,W=W,Ztor=Ztor,dip=dip,Rrup=Rrup,Fhw=Fhw,Z10=Z10,Z25=Z25,VsFlag=VsFlag )                                  
@@ -75,7 +75,7 @@ if opt == 'period':
             stds1.append(stds)
         IMs1 = np.array(IMs1)
         stds1 = np.array(stds1)    
-        for inga in xrange(4):
+        for inga in range(4):
             nga1 = NGA08_models[inga]
             nga2 = NGA14_models[inga]
             ax = fig.add_subplot(2,2,inga+1)
@@ -99,10 +99,10 @@ if opt == 'magnitude':
     Fhw = 0    # in this case, you don't need to provide the Rx 
     Vs30 = 760
     Z10 = Z25 = None
-    for ip in xrange(len(Ts)):
+    for ip in range(len(Ts)):
         Ti = Ts[ip]
         IMT = IMTs[ip]
-        for idist in xrange(len(Rjbs)):
+        for idist in range(len(Rjbs)):
             fig = plt.figure(1,figsize)
             fig.clf()
             Rjb = Rjbs[idist]
@@ -110,7 +110,7 @@ if opt == 'magnitude':
             title = 'IMT: %s (g), Rjb=%skm, Rrup=%skm, Vs30=%sm/s, Z1.0=%s, Z2.5=%s'%(IMT,'%.2f'%Rjb,'%.2f'%Rrup,'%.2f'%Vs30,Z10, Z25)
             pltnam = '/IMT_%s_Mws_Rjb_%s_Rrup_%s.%s'%(IMT,'%.2f'%Rjb,'%.2f'%Rrup,pfmt)            
             fig.text(0.1,0.95,title,fontsize=16)
-            for inga in xrange(4):
+            for inga in range(4):
                 ax = fig.add_subplot(2,2,inga+1)
                 nga1 = NGA08_models[inga]                
                 median, std, tau, sigma = NGA08( nga1, Mws, Rjb, Vs30, Ti, Ftype=Ftype, rake=rake,W=W,Ztor=Ztor,dip=dip,Rrup=Rrup,Fhw=Fhw,Z10=Z10,Z25=Z25,VsFlag=VsFlag )                      
@@ -153,14 +153,14 @@ if opt == 'distance0':
     title = 'IMT: %s (g), Mw=%s, Vs30=%sm/s, Z1.0=%s, Z2.5=%s'%(IMT,'%.2f'%Mw,'%.2f'%Vs30,Z10, Z25)
     pltnam = '/IMT_%s_Rs_Mw_%s.%s'%(IMT,'%.2f'%Mw, pfmt)            
     fig.text(0.1,0.95,title,fontsize=16)
-    for inga in xrange(4):
+    for inga in range(4):
 	ax = fig.add_subplot(2,2,inga+1)
 	nga1 = NGA08_models[inga]                
 	median, std, tau, sigma = NGA08( nga1, Mw, Rjbs, Vs30, Ti, Mech=Mech, Ftype=Ftype, rake=rake,W=W,Ztor=Ztor,dip=dip,Rrup=Rrups,Fhw=Fhw,Z10=Z10,Z25=Z25,VsFlag=VsFlag,AB11=1)
 	if nga1 == 'BA':
 	    Rs = Rjbs
-	    for i in xrange(len(Rjbs)):
-		print Rjbs[i], median[i], std[i], tau[i],sigma[i]
+	    for i in range(len(Rjbs)):
+		print(Rjbs[i], median[i], std[i], tau[i],sigma[i])
 	else: 
 	    Rs = Rrups
 
@@ -192,17 +192,17 @@ if opt == 'distance':
     Vs30 = 760
     Z10 = Z25 = None
 
-    for ip in xrange(len(Ts)):
+    for ip in range(len(Ts)):
         Ti = Ts[ip]
         IMT = IMTs[ip]
-        for imw in xrange(len(Mws)):
+        for imw in range(len(Mws)):
             fig = plt.figure(1,figsize)
             fig.clf()
             Mw = Mws[imw]
             title = 'IMT: %s (g), Mw=%s, Vs30=%sm/s, Z1.0=%s, Z2.5=%s'%(IMT,'%.2f'%Mw,'%.2f'%Vs30,Z10, Z25)
             pltnam = '/IMT_%s_Rs_Mw_%s.%s'%(IMT,'%.2f'%Mw, pfmt)            
             fig.text(0.1,0.95,title,fontsize=16)
-            for inga in xrange(4):
+            for inga in range(4):
                 ax = fig.add_subplot(2,2,inga+1)
                 nga1 = NGA08_models[inga]                
                 median, std, tau, sigma = NGA08( nga1, Mw, Rjbs, Vs30, Ti, Ftype=Ftype, rake=rake,W=W,Ztor=Ztor,dip=dip,Rrup=Rrups,Fhw=Fhw,Z10=Z10,Z25=Z25,VsFlag=VsFlag )                                         
@@ -236,10 +236,10 @@ if opt == 'vs30':
     Vs30s = [180,230,500,760,800,1300.]
     Mw = 6.5
     Z10 = Z25 = None
-    for ip in xrange(len(Ts)):
+    for ip in range(len(Ts)):
         Ti = Ts[ip]
         IMT = IMTs[ip]
-        for idist in xrange(len(Rjbs)):
+        for idist in range(len(Rjbs)):
             fig = plt.figure(1,figsize)
             fig.clf()
             Rjb = Rjbs[idist]
@@ -247,7 +247,7 @@ if opt == 'vs30':
             title = 'IMT: %s (g), Rjb=%skm, Rrup=%skm, Mw=%s, Z1.0=%s, Z2.5=%s'%(IMT,'%.2f'%Rjb,'%.2f'%Rrup,Mw,Z10, Z25)
             pltnam = '/IMT_%s_Vs30s_Mw_%s_Rjb_%s_Rrup_%s.%s'%(IMT,'%.2f'%Mw, '%.2f'%Rjb,'%.2f'%Rrup,pfmt)            
             fig.text(0.1,0.95,title,fontsize=16)
-            for inga in xrange(4):
+            for inga in range(4):
                 ax = fig.add_subplot(2,2,inga+1)
                 nga1 = NGA08_models[inga]                
                 median, std, tau, sigma = NGA08( nga1, Mw, Rjb, Vs30s, Ti, Ftype=Ftype, rake=rake,W=W,Ztor=Ztor,dip=dip,Rrup=Rrup,Fhw=Fhw,Z10=Z10,Z25=Z25,VsFlag=VsFlag )                      

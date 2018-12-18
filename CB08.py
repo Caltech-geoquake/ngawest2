@@ -2,7 +2,7 @@
 """
 CB 08 NGA model
 """
-from utils import *
+from .utils import *
 
 class CB08_nga():
     """
@@ -101,7 +101,7 @@ class CB08_nga():
 
 	# Old Coefs (period match)
 	self.Coefs = {}
-	for i in xrange(len(self.periods)):
+	for i in range(len(self.periods)):
 	    T1 = self.periods[i]
 	    Tkey = GetKey(T1)
 	    self.Coefs[Tkey] = {}
@@ -121,7 +121,7 @@ class CB08_nga():
 	    self.Coefs[Tkey]['k1']   = k1s[i]
 	    self.Coefs[Tkey]['k2']   = k2s[i]
 	    self.Coefs[Tkey]['k3']   = k3s[i]
-	self.CoefKeys = self.Coefs[self.Coefs.keys()[0]].keys()
+	self.CoefKeys = list(self.Coefs[list(self.Coefs.keys())[0]].keys())
 	
     
     # Call to get the SA value
@@ -149,17 +149,17 @@ class CB08_nga():
 	if T in self.periods:
 	    self.T = T
 	else:
-	    print 'T is not in periods list, try to interpolate'
+	    print('T is not in periods list, try to interpolate')
 	    raise ValueError
 	
 	if self.M == None or self.M < 0:
-	    print 'Moment magnitude must be a postive number'
+	    print('Moment magnitude must be a postive number')
 	    raise ValueError
 	if self.Rjb == None or self.Rjb < 0: 
-	    print 'Joyner-Boore distance must be a non-negative number'
+	    print('Joyner-Boore distance must be a non-negative number')
 	    raise ValueError
 	if self.Vs30 == None or self.Vs30 < 0: 
-	    print 'Vs30 must be a positive number'
+	    print('Vs30 must be a positive number')
 	    raise ValueError
 	
 	# Determine the Fault-related parameters (if necessary)
@@ -168,14 +168,14 @@ class CB08_nga():
 	    self.Frv = 1*(Ftype == 'RV')
 	else: 
 	    if rake == None or rake < -180 or rake > 180.:
-		print 'rake angle should be within [-180,180]'
+		print('rake angle should be within [-180,180]')
 		raise ValueError
 	    else: 
 		self.Frv, self.Fnm = rake2ftype_CB( self.rake )
        
 	if W == None:
 	    if self.rake == None: 
-		print 'you should give either the fault width W or the rake angle'
+		print('you should give either the fault width W or the rake angle')
 		raise ValueError
 	    else:
 		W = calc_W(self.M,self.rake)
@@ -184,7 +184,7 @@ class CB08_nga():
 
 	if dip == None:
 	    if self.rake == None: 
-		print 'you should give either the fault dip angle or the rake angle'
+		print('you should give either the fault dip angle or the rake angle')
 		raise ValueError
 	    else:
 		self.dip = calc_dip( self.rake )
@@ -194,7 +194,7 @@ class CB08_nga():
 	if Ztor == None:
 	    if Zhypo == None:
 		if self.rake == None: 
-		    print 'you should give either the Ztor or the rake angle'
+		    print('you should give either the Ztor or the rake angle')
 		    raise ValueError
 		else:
 		    Zhypo = calc_Zhypo( self.M, self.rake )
@@ -229,7 +229,7 @@ class CB08_nga():
 
         # update coeficient (use updated coefficients)
 	if NewCoefs != None:
-	    NewCoefKeys = NewCoefs.keys()
+	    NewCoefKeys = list(NewCoefs.keys())
 	    Tkey = GetKey(self.T)
 	    for key in NewCoefKeys:
 		self.Coefs[Tkey][key] = NewCoefs[key]
@@ -331,7 +331,7 @@ class CB08_nga():
 	elif self.Rjb >0 and self.Ztor >= 1:
 	    f_hngr = (self.Rrup-self.Rjb)/self.Rrup
 	else:
-	    print 'Rjb should be larger or equal to 0'
+	    print('Rjb should be larger or equal to 0')
 	    raise ValueError
 	
 	if self.M <= 6.0:
@@ -524,8 +524,8 @@ def CB08nga_test(T, CoefTerms):
     kwds = {'Ftype':Ftype,'Z25':Z25,'Rrup':Rrup,'W':W,'Ztor':Ztor,'dip':dip,'Arb':Arb,'CoefTerms':CoefTerms}
     values = mapfunc( CBnga, M, Rjb, Vs30, T, rake,**kwds )
 
-    for i in xrange( len(values) ):
-	print Rrup[i], values[i]
+    for i in range( len(values) ):
+	print(Rrup[i], values[i])
 
     return CBnga
 
@@ -537,9 +537,9 @@ if __name__ == '__main__':
     Ts = [2.0, 3.0, 4.0, 5.0, 7.5, 10.0]
     Ts = [0.3]
     for T in Ts:
-	print 'CB SA at %s'%('%3.2f'%T)
+	print('CB SA at %s'%('%3.2f'%T))
 	CBnga = CB08nga_test(T,CoefTerms)
     T = -1.0
-    print 'CB PGA'
+    print('CB PGA')
     CBnga = CB08nga_test(T,CoefTerms)
 

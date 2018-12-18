@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from utils import *
+from .utils import *
 
 class CY08_nga:
     """
@@ -158,7 +158,7 @@ class CY08_nga:
  
 	# period match up (Old Coefs)
 	self.Coefs = {}
-	for i in xrange( len(self.periods) ):
+	for i in range( len(self.periods) ):
 	    T1 = self.periods[i]
 	    Tkey = GetKey( T1 )
 	    self.Coefs[Tkey] = {}
@@ -191,7 +191,7 @@ class CY08_nga:
 	    self.Coefs[Tkey]['f6']  = f6s[i]  
 	    self.Coefs[Tkey]['f7']  = f7s[i]  
 	    self.Coefs[Tkey]['f8']  = f8s[i]  
-	self.CoefKeys = self.Coefs[self.Coefs.keys()[0]].keys()
+	self.CoefKeys = list(self.Coefs[list(self.Coefs.keys())[0]].keys())
 
 
     # call the function 
@@ -211,7 +211,7 @@ class CY08_nga:
 	if T in self.periods:
 	    self.T = T
 	else:
-	    print 'T is not in periods list, try to interpolate'
+	    print('T is not in periods list, try to interpolate')
 	    raise ValueError
 	
 	terms = CoefTerms['terms']
@@ -223,14 +223,14 @@ class CY08_nga:
 	    self.Frv = 1*(Ftype == 'RV')
 	else: 
 	    if rake == None or rake < -180 or rake > 180.:
-		print 'rake angle should be within [-180,180]'
+		print('rake angle should be within [-180,180]')
 		raise ValueError
 	    else: 
 		self.Frv, self.Fnm = rake2ftype_CY( self.rake )
 
 	if W == None:
 	    if self.rake == None: 
-		print 'you should give either the fault width W or the rake angle'
+		print('you should give either the fault width W or the rake angle')
 		raise ValueError
 	    else:
 		W = calc_W(self.M,self.rake)
@@ -239,7 +239,7 @@ class CY08_nga:
 	
 	if dip == None:
 	    if self.rake == None: 
-		print 'you should give either the fault dip angle or the rake angle'
+		print('you should give either the fault dip angle or the rake angle')
 		raise ValueError
 	    else:
 		self.dip = calc_dip( self.rake )
@@ -249,7 +249,7 @@ class CY08_nga:
 	if Ztor == None:
 	    if Zhypo == None:
 		if self.rake == None: 
-		    print 'you should give either the Ztor or the rake angle'
+		    print('you should give either the Ztor or the rake angle')
 		    raise ValueError
 		else:
 		    Zhypo = calc_Zhypo( self.M, self.rake )
@@ -259,7 +259,7 @@ class CY08_nga:
 	
 	if Fhw == None:
 	    if azimuth == None and Rx == None:
-		print 'either one of azimuth angle, Rx and Fhw has to be specified'
+		print('either one of azimuth angle, Rx and Fhw has to be specified')
 		raise ValueError
 
 	    if azimuth != None:
@@ -309,7 +309,7 @@ class CY08_nga:
 	
         # update coeficient
 	if NewCoefs != None:
-	    NewCoefKeys = NewCoefs.keys()
+	    NewCoefKeys = list(NewCoefs.keys())
 	    Tkey = GetKey(self.T)
 	    for key in NewCoefKeys:
 		self.Coefs[Tkey][key] = NewCoefs[key]
@@ -494,9 +494,9 @@ def CY08nga_test(T,CoefTerms):
     
     kwds= {'Ztor':Ztor,'dip':dip,'Rrup':Rrup,'Rx':Rx,'Z10':Z10,'AS':AS,'VsFlag':VsFlag,'CoefTerms':CoefTerms} 
     values = mapfunc( CYnga, M, Rjb, Vs30, T, rake, **kwds )
-    print 'Median, SigmaT, Tau, Sigma'
-    for i in xrange( len(values) ):
-	print values[i]
+    print('Median, SigmaT, Tau, Sigma')
+    for i in range( len(values) ):
+	print(values[i])
     return CYnga
 
 
@@ -509,9 +509,9 @@ if __name__ == '__main__':
     Z10 = 1000
     Ts = [3.0, 5.0, 10.0]
     for T in Ts:
-	print 'CY SA at %s'%('%3.2f'%T)
+	print('CY SA at %s'%('%3.2f'%T))
 	CYnga = CY08nga_test(T,CoefTerms)
-        print CYnga.basin_function(Z10=Z10,Tother=T) 
+        print(CYnga.basin_function(Z10=Z10,Tother=T)) 
 
     #T = -1.0
     #print 'CY PGA:'

@@ -2,7 +2,7 @@
 """
 SC08 directivity model
 """
-from utils import *
+from .utils import *
 
 # =================================
 # Correction of directivity term
@@ -90,14 +90,14 @@ class SC08_model:
 
 	# define dictionary for coefficients selection
 	self.Coefs = {}
-	for i in xrange( len(self.periods) ):
+	for i in range( len(self.periods) ):
 	    T1 = self.periods[i]
 	    Tkey = GetKey(T1)
 	    self.Coefs[Tkey] = {}
 	    self.Coefs[Tkey]['a'] = a1s[i]
 	    self.Coefs[Tkey]['a0'] = a0s[i]
 	    self.Coefs[Tkey]['b'] = bs[i]
-	self.CoefKeys = self.Coefs[self.Coefs.keys()[0]].keys()
+	self.CoefKeys = list(self.Coefs[list(self.Coefs.keys())[0]].keys())
 
 	self.fD=[]    # directivity correction   ( remember to plus the average residual a0 term)
 	self.IDP = []
@@ -116,7 +116,7 @@ class SC08_model:
 	if T in self.periods:
 	    self.T = T
 	else:
-	    print 'T is not in periods list, try to interpolate'
+	    print('T is not in periods list, try to interpolate')
 	    raise ValueError
 	
 	# change the value of ctildepr due to the different velocity ratio
@@ -132,7 +132,7 @@ class SC08_model:
 	if NewCoefs != None:
 	    # only update Coefs given by NewCoefs (at self.T)
 	    Tkey = GetKey( self.T )
-	    NewCoefKeys = NewCoefs.keys()
+	    NewCoefKeys = list(NewCoefs.keys())
 	    for key in NewCoefKeys:
 		self.Coefs[Tkey][key] = NewCoefs[key]
 	

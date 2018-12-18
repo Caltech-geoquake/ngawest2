@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from utils import *
+from .utils import *
 
 class ASK14_nga:
     """
@@ -28,7 +28,7 @@ class ASK14_nga:
         inputs = np.loadtxt(self.CoefFile,skiprows=2,delimiter=',')
         self.periods = inputs[:,0]
         coefs = inputs[:,1:]
-        for i in xrange( len(self.periods) ):
+        for i in range( len(self.periods) ):
             T1 = self.periods[i]
             Tkey = GetKey(T1)
             
@@ -41,7 +41,7 @@ class ASK14_nga:
                 self.periods[i] = -1
               
             self.Coefs[Tkey] = {}
-            for ikey in xrange(len(self.CoefKeys)):
+            for ikey in range(len(self.CoefKeys)):
                 key = self.CoefKeys[ikey]
                 cmd = "self.Coefs['%s']['%s'] = coefs[%i,%i]"%(Tkey,key,i,ikey)
                 exec(cmd)
@@ -67,7 +67,7 @@ class ASK14_nga:
 	if T in self.periods:
 	    self.T = T
 	else:
-	    print 'T is not in periods list, try to interpolate'
+	    print('T is not in periods list, try to interpolate')
 	    raise ValueError
         
         self.c = 2.4*(self.T != -2) + 2400*(self.T == -2)
@@ -81,14 +81,14 @@ class ASK14_nga:
 	    self.Frv = 1*(Ftype == 'RV')
 	else: 
 	    if rake == None or rake < -180 or rake > 180.:
-		print 'rake angle should be within [-180,180]'
+		print('rake angle should be within [-180,180]')
 		raise ValueError
 	    else: 
 		self.Frv, self.Fnm = rake2ftype_AS( self.rake )
 
 	if W == None:
 	    if self.rake == None: 
-		print 'you should give either the fault width W or the rake angle'
+		print('you should give either the fault width W or the rake angle')
 		raise ValueError
 	    else:
 		self.W = calc_W(self.M,self.rake)
@@ -97,7 +97,7 @@ class ASK14_nga:
 	
 	if dip == None:
 	    if self.rake == None: 
-		print 'you should give either the fault dip angle or the rake angle'
+		print('you should give either the fault dip angle or the rake angle')
 		raise ValueError
 	    else:
 		self.dip = calc_dip( self.rake )
@@ -107,7 +107,7 @@ class ASK14_nga:
 	if Ztor == None:
 	    if Zhypo == None:
 		if self.rake == None: 
-		    print 'you should give either the Ztor or the rake angle'
+		    print('you should give either the Ztor or the rake angle')
 		    raise ValueError
 		else:
 		    Zhypo = calc_Zhypo( self.M, self.rake )
@@ -119,7 +119,7 @@ class ASK14_nga:
 
 	if Fhw == None:
 	    if azimuth == None and Rx == None:
-		print 'either one of azimuth angle, Rx and Fhw has to be specified'
+		print('either one of azimuth angle, Rx and Fhw has to be specified')
 		raise ValueError
 
 	    if azimuth != None:
@@ -184,7 +184,7 @@ class ASK14_nga:
 
         # update coeficient
 	if NewCoefs != None:
-	    NewCoefKeys = NewCoefs.keys()
+	    NewCoefKeys = list(NewCoefs.keys())
 	    Tkey = GetKey(self.T)
 	    for key in NewCoefKeys:
 		self.Coefs[Tkey][key] = NewCoefs[key]
@@ -573,9 +573,9 @@ def ASK14nga_test(T,CoefTerms):
 
     kwds = {'Ftype':Ftype,'Rrup':Rrup,'Rx':Rx,'dip':dip,'Ztor':Ztor,'W':W,'Z10':Z10,'Fas':Fas,'VsFlag':VsFlag,'CoefTerms':CoefTerms}
     values = mapfunc( ASKnga, Mw, Rjb, Vs30, T, rake, **kwds )
-    print 'Median, SigmaT, Tau, Sigma'
-    for i in xrange( len(values) ):
-	print values[i]
+    print('Median, SigmaT, Tau, Sigma')
+    for i in range( len(values) ):
+	print(values[i])
     
     return ASKnga
 
@@ -591,18 +591,18 @@ if __name__ == '__main__':
 	T = 1.0
 	CoefTerms = {'terms':(1,1,1,1,1,1,1), 'NewCoefs':NewCoefs}
 
-	print 'AS SA at %s'%('%3.2f'%T)
+	print('AS SA at %s'%('%3.2f'%T))
 	AS14nga = AS14nga_test(T,CoefTerms)
 	
 	T = -1.0
-	print 'AS PGA:'
+	print('AS PGA:')
 	CoefTerms = {'terms':(1,1,1,1,1,1,1), 'NewCoefs':None}
 	AS14nga = ASK14nga_test(T,CoefTerms)
     else: 
 	# Notes: PGV for Vs30 = 760, Z10 = 24, the soil-depth function should be the same as T=1.0
         #for T in [-1.0,-2.0, 0.01, 0.02, 0.03, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5, 10.0]:
         for T in [1.0,3.0]:
-            print 'AS SA at %s'%('%3.2f'%T)
+            print('AS SA at %s'%('%3.2f'%T))
             CoefTerms = {'terms':(1,1,1,1,1,1,1), 'NewCoefs':None}
             ASKnga = ASK14nga_test(T,CoefTerms)
 

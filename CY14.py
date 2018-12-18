@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from utils import *
+from .utils import *
 
 class CY14_nga:
     """
@@ -28,7 +28,7 @@ class CY14_nga:
         inputs = np.loadtxt(self.CoefFile,skiprows=2,delimiter=',')
         self.periods = inputs[:,0]
         coefs = inputs[:,1:]
-        for i in xrange( len(self.periods) ):
+        for i in range( len(self.periods) ):
             T1 = self.periods[i]
             Tkey = GetKey(T1)
             
@@ -41,7 +41,7 @@ class CY14_nga:
                 self.periods[i] = -1
               
             self.Coefs[Tkey] = {}
-            for ikey in xrange(len(self.CoefKeys)):
+            for ikey in range(len(self.CoefKeys)):
                 key = self.CoefKeys[ikey]
                 cmd = "self.Coefs['%s']['%s'] = coefs[%i,%i]"%(Tkey,key,i,ikey)
                 exec(cmd)
@@ -60,7 +60,7 @@ class CY14_nga:
         if T in self.periods:
 	    self.T = T
 	else:
-	    print 'T is not in periods list, try to interpolate'
+	    print('T is not in periods list, try to interpolate')
 	    raise ValueError
 	
         # required inputs
@@ -81,14 +81,14 @@ class CY14_nga:
 	    self.Frv = 1*(Ftype == 'RV')
 	else: 
 	    if rake == None or rake < -180 or rake > 180.:
-		print 'rake angle should be within [-180,180]'
+		print('rake angle should be within [-180,180]')
 		raise ValueError
 	    else: 
 		self.Frv, self.Fnm = rake2ftype_CY( self.rake )
 
 	if W == None:
 	    if self.rake == None: 
-		print 'you should give either the fault width W or the rake angle'
+		print('you should give either the fault width W or the rake angle')
 		raise ValueError
 	    else:
 		W = calc_W(self.M,self.rake)
@@ -97,7 +97,7 @@ class CY14_nga:
 	
 	if dip == None:
 	    if self.rake == None: 
-		print 'you should give either the fault dip angle or the rake angle'
+		print('you should give either the fault dip angle or the rake angle')
 		raise ValueError
 	    else:
 		self.dip = calc_dip( self.rake )
@@ -112,7 +112,7 @@ class CY14_nga:
 	if Ztor == None:
 	    if Zhypo == None:
 		if self.rake == None: 
-		    print 'you should give either the Ztor or the rake angle'
+		    print('you should give either the Ztor or the rake angle')
 		    raise ValueError
 		else:
 		    Zhypo = calc_Zhypo( self.M, self.rake )
@@ -122,7 +122,7 @@ class CY14_nga:
 	
 	if Fhw == None:
 	    if azimuth == None and Rx == None:
-		print 'either one of azimuth angle, Rx and Fhw has to be specified'
+		print('either one of azimuth angle, Rx and Fhw has to be specified')
 		raise ValueError
 
 	    if azimuth != None:
@@ -182,7 +182,7 @@ class CY14_nga:
 
         # update coeficient
 	if NewCoefs != None:
-	    NewCoefKeys = NewCoefs.keys()
+	    NewCoefKeys = list(NewCoefs.keys())
 	    Tkey = GetKey(self.T)
 	    for key in NewCoefKeys:
 		self.Coefs[Tkey][key] = NewCoefs[key]
@@ -419,9 +419,9 @@ def CY14nga_test(T,CoefTerms):
     
     kwds= {'Ftype':Ftype,'Ztor':Ztor,'dip':dip,'Rrup':Rrup,'Rx':Rx,'Z10':Z10,'AS':AS,'VsFlag':VsFlag,'CoefTerms':CoefTerms} 
     values = mapfunc( CYnga, M, Rjb, Vs30, T, rake, **kwds )
-    print 'Median, SigmaT, Tau, Sigma'
-    for i in xrange( len(values) ):
-	print values[i]
+    print('Median, SigmaT, Tau, Sigma')
+    for i in range( len(values) ):
+	print(values[i])
     return CYnga
 
 
@@ -433,7 +433,7 @@ if __name__ == '__main__':
     Ts = [1.0, 3.0]
     for T in Ts:
     #for T in [0.3, ]:
-        print 'CY GM at %s'%('%3.2f'%T)
+        print('CY GM at %s'%('%3.2f'%T))
         CYnga = CY14nga_test(T,CoefTerms)
 
 

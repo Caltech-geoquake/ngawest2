@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from utils import *
+from .utils import *
 
 # use can use the class to directly compute the IM and variances
 # and you can use each individual functions in the class to do the regression ! 
@@ -113,7 +113,7 @@ class AS08_nga:
 		    0.200, 0.200, 0.740]
         
 	self.Coefs = {}
-	for i in xrange( len(self.periods) ):
+	for i in range( len(self.periods) ):
 	    T1 = self.periods[i]
 	    Tkey = GetKey( T1 )
 	    self.Coefs[Tkey] = {}
@@ -133,7 +133,7 @@ class AS08_nga:
 	    self.Coefs[Tkey]['a15'] = a15s[i]  
 	    self.Coefs[Tkey]['a16']  = a16s[i]  
 	    self.Coefs[Tkey]['a18'] = a18s[i]  
-	self.CoefKeys = self.Coefs[self.Coefs.keys()[0]].keys()
+	self.CoefKeys = list(self.Coefs[list(self.Coefs.keys())[0]].keys())
 
 
     def __call__(self,M,Rjb,Vs30,T,rake, Ftype=None, \
@@ -151,7 +151,7 @@ class AS08_nga:
 	if T in self.periods:
 	    self.T = T
 	else:
-	    print 'T is not in periods list, try to interpolate'
+	    print('T is not in periods list, try to interpolate')
 	    raise ValueError
 	
 	terms = CoefTerms['terms']
@@ -163,14 +163,14 @@ class AS08_nga:
 	    self.Frv = 1*(Ftype == 'RV')
 	else: 
 	    if rake == None or rake < -180 or rake > 180.:
-		print 'rake angle should be within [-180,180]'
+		print('rake angle should be within [-180,180]')
 		raise ValueError
 	    else: 
 		self.Frv, self.Fnm = rake2ftype_AS( self.rake )
 
 	if W == None:
 	    if self.rake == None: 
-		print 'you should give either the fault width W or the rake angle'
+		print('you should give either the fault width W or the rake angle')
 		raise ValueError
 	    else:
 		W = calc_W(self.M,self.rake)
@@ -179,7 +179,7 @@ class AS08_nga:
 	
 	if dip == None:
 	    if self.rake == None: 
-		print 'you should give either the fault dip angle or the rake angle'
+		print('you should give either the fault dip angle or the rake angle')
 		raise ValueError
 	    else:
 		self.dip = calc_dip( self.rake )
@@ -189,7 +189,7 @@ class AS08_nga:
 	if Ztor == None:
 	    if Zhypo == None:
 		if self.rake == None: 
-		    print 'you should give either the Ztor or the rake angle'
+		    print('you should give either the Ztor or the rake angle')
 		    raise ValueError
 		else:
 		    Zhypo = calc_Zhypo( self.M, self.rake )
@@ -200,7 +200,7 @@ class AS08_nga:
 
 	if Fhw == None:
 	    if azimuth == None and Rx == None:
-		print 'either one of azimuth angle, Rx and Fhw has to be specified'
+		print('either one of azimuth angle, Rx and Fhw has to be specified')
 		raise ValueError
 
 	    if azimuth != None:
@@ -252,7 +252,7 @@ class AS08_nga:
 
         # update coeficient
 	if NewCoefs != None:
-	    NewCoefKeys = NewCoefs.keys()
+	    NewCoefKeys = list(NewCoefs.keys())
 	    Tkey = GetKey(self.T)
 	    for key in NewCoefKeys:
 		self.Coefs[Tkey][key] = NewCoefs[key]
@@ -710,14 +710,14 @@ def AS08nga_test(T,CoefTerms):
     # Test of shallow soil depth site but different Vs30 (especially the small value in Vs30) to explain the smaller value in b(r) of AS-BA
     Vs30 = [150,200,300,400,500,600,800,1200]
     for vs in Vs30: 
-	print ASnga.soil_function(Z10=24., Vs30=vs, Tother=3.0) 
-    raw_input() 
+	print(ASnga.soil_function(Z10=24., Vs30=vs, Tother=3.0)) 
+    input() 
 
     kwds = {'Ftype':Ftype,'Rrup':Rrup,'Rx':Rx,'dip':dip,'Ztor':Ztor,'W':W,'Z10':Z10,'Fas':Fas,'VsFlag':VsFlag,'CoefTerms':CoefTerms}
     values = mapfunc( ASnga, Mw, Rjb, Vs30, T, rake, **kwds )
-    print 'Median, SigmaT, Tau, Sigma'
-    for i in xrange( len(values) ):
-	print values[i]
+    print('Median, SigmaT, Tau, Sigma')
+    for i in range( len(values) ):
+	print(values[i])
     
     return ASnga
 
@@ -733,17 +733,17 @@ if __name__ == '__main__':
 	T = 3.0
 	CoefTerms = {'terms':(1,1,1,1,1,1,1), 'NewCoefs':NewCoefs}
 
-	print 'AS SA at %s'%('%3.2f'%T)
+	print('AS SA at %s'%('%3.2f'%T))
 	ASnga = AS08nga_test(T,CoefTerms)
 	
 	T = -1.0
-	print 'AS PGA:'
+	print('AS PGA:')
 	CoefTerms = {'terms':(1,1,1,1,1,1,1), 'NewCoefs':None}
 	ASnga = AS08nga_test(T,CoefTerms)
     else: 
 	# Notes: PGV for Vs30 = 760, Z10 = 24, the soil-depth function should be the same as T=1.0
 	T = -2.0
-	print 'AS PGV:'
+	print('AS PGV:')
 	CoefTerms = {'terms':(1,1,1,1,1,1,1), 'NewCoefs':None}
 	ASnga = AS08nga_test(T,CoefTerms)
 

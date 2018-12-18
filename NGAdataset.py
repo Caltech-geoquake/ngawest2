@@ -14,7 +14,7 @@ def ReadFlatFileNGA(xlsfile):
     book = xlrd.open_workbook(xlsfile)
     sh = book.sheet_by_index(0)    # 'Flatfile' sheet name
     keys = sh.row_values(0)
-    for itmp in xrange( len(keys) ):
+    for itmp in range( len(keys) ):
 	keys[itmp] = keys[itmp].encode('ascii')
     
     # Column names needed ( add more depending on selection criterion )
@@ -38,7 +38,7 @@ def ReadFlatFileNGA(xlsfile):
     
     periods = []
     for ikey, key in enumerate( keys ):
-	if isinstance( key, unicode ):
+	if isinstance( key, str ):
 	    key.encode( 'ascii' )
         # key now is one of the column name
 	if key[0] == 'T' and key[-1] == 'S':
@@ -59,7 +59,7 @@ def ReadFlatFileNGA(xlsfile):
     for icol, key in enumerate( names_predictors ):
 	col0 = sh.col_values(icol_dictP[key])
 	col0[0] = col0[0].encode('ascii')
-	if isinstance( col0[1], unicode ):
+	if isinstance( col0[1], str ):
 	    if key == 'FW/HW Indicator':
 		# Fhw string to flag (int)
 		for irow in range(1, len(col0) ):
@@ -74,7 +74,7 @@ def ReadFlatFileNGA(xlsfile):
 
     for icol, key in enumerate( names_IMs ):
 	col0 = sh.col_values(icol_dictI[key])
-	if isinstance( col0[1], unicode ):
+	if isinstance( col0[1], str ):
 	    for irow in range(1, len(col0) ):
 		col0[irow] = col0[irow].encode('ascii')
 	keyI = keys_IMs[icol]
@@ -85,9 +85,9 @@ def ReadFlatFileNGA(xlsfile):
 
 def test_ReadFlatFileNGA(xlsfile):
     nga_flats, nga_IMs = ReadFlatFileNGA(xlsfile)
-    print nga_flats.keys()
-    print nga_IMs.keys()
-    print nga_flats['Fhw']
+    print(list(nga_flats.keys()))
+    print(list(nga_IMs.keys()))
+    print(nga_flats['Fhw'])
 
 
 #  Other Utilities
@@ -108,7 +108,7 @@ def GetSubset( nga_flats0, nga_IMs0, index ):
 
 # Save by rules
 def SubsetExtractNGA0(nga_flats, nga_IMs, RecordID):
-    print RecordID[0]
+    print(RecordID[0])
 
     nga_flats0 = {}; nga_IMs0 = {}
     for ikey0, key0 in enumerate( nga_flats.keys() ):
@@ -117,7 +117,7 @@ def SubsetExtractNGA0(nga_flats, nga_IMs, RecordID):
 	    try:
 		nga_flats0[key0].append( nga_flats[key0][rid-1] )
 	    except:
-		print key0, rid
+		print(key0, rid)
 	
     for ikey0, key0 in enumerate( nga_IMs.keys() ):
 	nga_IMs0[key0] = []
@@ -125,7 +125,7 @@ def SubsetExtractNGA0(nga_flats, nga_IMs, RecordID):
 	    try:
 		nga_IMs0[key0].append( nga_IMs[key0][rid-1] )
 	    except:
-		print key0, rid
+		print(key0, rid)
 
     return nga_flats0, nga_IMs0
 
@@ -162,7 +162,7 @@ def SubsetExtractNGA(nga_flats, nga_IMs, rules=None):
 	    if key == 'H1' or key == 'H2':
 		# one special case where the seismogram name with *XXX.at2 or *XXX-(W,N,S,E).at2
 		row_value0 = []; row_value_tmp0 = []
-		for irow in xrange( len(row_value) ):
+		for irow in range( len(row_value) ):
 		    char0 = row_value[irow].strip().split('.')[0]
 		    char1 = char0[-1]
 		    if char1 in ['W','E','N','S']:
@@ -186,24 +186,24 @@ def SubsetExtractNGA(nga_flats, nga_IMs, rules=None):
 				index = eval("(np.array(row_value)%s'%s').nonzero()"%(con,values))[0]
 				nga_flats0, nga_IMs0 = GetSubset(nga_flats0,nga_IMs0, index)
 			    else:
-				print N
+				print(N)
 				# for [1,2,3,],['A','B',] (string list or number list)
-				for ic in xrange( N ):
-				    print 'id %s'%value[ic]
+				for ic in range( N ):
+				    print('id %s'%value[ic])
 				    row_value = nga_flats0[key]
 				    if isinstance( values[ic], str ):
 					index = eval("(np.array(row_value)%s'%s').nonzero()"%(con,values[ic]))[0]
 				    else:
 					index = eval('(np.array(row_value)%s%s).nonzero()'%(con,values[ic]))[0]
-				    print index
+				    print(index)
 				    nga_flats0, nga_IMs0 = GetSubset(nga_flats0,nga_IMs0, index)
-				    print 'test GetSubset'
+				    print('test GetSubset')
 				    row_input()
 
 			except:
 			    if isintance( values, str ):
 				# for ''( empty)
-				print 'test'
+				print('test')
 				index = eval("(np.array(row_value)%s'%s').nonzero()"%(con,values))[0]
 				nga_flats0, nga_IMs0 = GetSubset(nga_flats0,nga_IMs0, index)
 			    else:
@@ -214,21 +214,21 @@ def SubsetExtractNGA(nga_flats, nga_IMs, rules=None):
 		    elif con == '>' or con == '<' or con=='>=' or con=='<=':
 			try: 
 			    Nv = len(values)
-			    print '>,<,>=,<= could not work for multiple values or strings'
+			    print('>,<,>=,<= could not work for multiple values or strings')
 			    raise ValueError
 			except:
 			    index = eval('(np.array(row_value)%s%s).nonzero()'%(con,values))[0]
 			    nga_flats0, nga_IMs0 = GetSubset(nga_flats0,nga_IMs0, index)
 		else:
 		    # multiple conditions (2)
-		    for ic in xrange( Nc ):
+		    for ic in range( Nc ):
 			row_value = nga_flats0[key] 
 			con = condition[ic][0]
 			value = conditions[ic][1]
 			if con == '>' or con == '<' or con=='>=' or con=='<=':
 			    try: 
 				Nv = len(value)
-				print '>,<,>=,<= could not work for multiple values or string'
+				print('>,<,>=,<= could not work for multiple values or string')
 				raise ValueError
 			    except:
 				index = eval('(np.array(row_value)%s%s).nonzero()'%(con,value))[0]
@@ -252,14 +252,14 @@ def WriteSubsetNGA(flats, IMs, xlsfile):
     wbk = xlwt.Workbook()
     sheet1 = wbk.add_sheet('FlatFile_Subset')
     for ikey, key in enumerate( flats.keys() ):
-	for irow in xrange( len( flats[key] )+1 ):
+	for irow in range( len( flats[key] )+1 ):
 	    if irow == 0:
 		sheet1.write( irow, ikey, key )
 	    else:
 		sheet1.write( irow, ikey, flats[key][irow-1] )
     sheet2 = wbk.add_sheet('FlatFile_Subset_IM')
     for ikey, key in enumerate( IMs.keys() ):
-	for irow in xrange( len( IMs[key] )+1 ):
+	for irow in range( len( IMs[key] )+1 ):
 	    if irow == 0:
 		sheet2.write( irow, ikey, key )
 	    else:
@@ -281,22 +281,22 @@ def ReadSubsetNGA(xlsfile, ftype='xls'):
 	# flatinfo
 	keys = sh1.row_values(0)     # column name
 	for icol, key in enumerate( keys ):
-	    if isinstance( key, unicode ):
+	    if isinstance( key, str ):
 		key = key.encode( 'ascii' )
 	    col0 = sh1.col_values(icol)
 	    for irow in range(1, len(col0) ):
-		if isinstance( col0[irow] , unicode ):
+		if isinstance( col0[irow] , str ):
 		    col0[irow] = col0[irow].encode('ascii')
 	    nga_flats[key] = col0[1:]
 
 	# IMinfo
 	keys = sh2.row_values(0)
 	for icol, key in enumerate( keys ):
-	    if isinstance( key, unicode ):
+	    if isinstance( key, str ):
 		key = key.encode( 'ascii' )
 	    col0 = sh2.col_values(icol)
 	    for irow in range(1, len(col0) ):
-		if isinstance( col0[1], unicode ):
+		if isinstance( col0[1], str ):
 		    col0[irow] = col0[irow].encode('ascii')
 	    nga_IMs[key] = col0[1:]
     else:
@@ -317,7 +317,7 @@ def info_pre(flatinfo, IMinfo):
     flatinfo0 = {}; IMinfo0 = {}
     for ikey, key in enumerate( keys_flat ):
 	row_value = flatinfo[key]
-	for irow in xrange( len(row_value) ):
+	for irow in range( len(row_value) ):
 	    if isinstance(row_value[irow], str):
 		if row_value[irow] == '':
 		    row_value[irow] = None
@@ -351,7 +351,7 @@ def info_pre(flatinfo, IMinfo):
     IMinfo.pop('PGD')
     for ikey, key in enumerate( IMinfo.keys() ):
 	row_value = IMinfo[key]
-	for irow in xrange( len(row_value) ):
+	for irow in range( len(row_value) ):
 	    rv = row_value[irow]
 	    if isinstance( rv, str ):
 		row_value[irow] = float( rv )
@@ -377,10 +377,10 @@ def IMs_nga_Py( flatinfo, periods, NGA_models = ['BA',], NGAs=None ):
 	IMs[nga] = []
 	IMs_std[nga] = []
 	
-	print 'Compute %s model...'%nga
+	print('Compute %s model...'%nga)
 	
 	# Compute NGAs
-	for ip in xrange( Np ):
+	for ip in range( Np ):
 	    median, std, tau, sigma = NGA08( nga, flatinfo['Mw'], flatinfo['Rjb'], flatinfo['Vs30'], periods[ip], flatinfo['rake'], NGAs=NGAs,\
 				 Rrup = flatinfo['Rrup'], Rx=None, dip = flatinfo['dip'], W = flatinfo['W'], Ztor = flatinfo['Ztor'], \
 				 Z25 = flatinfo['Z2.5'], Z10 = flatinfo['Z1.0'], azimuth=flatinfo['azimuth'],Fhw=flatinfo['Fhw'], \
@@ -401,7 +401,7 @@ def HypocenterDistribution(xlsfile):
     book = xlrd.open_workbook(xlsfile)
     sh = book.sheet_by_index(0)    # 'Flatfile' sheet name
     keys = sh.row_values(0)
-    for itmp in xrange( len(keys) ):
+    for itmp in range( len(keys) ):
 	keys[itmp] = keys[itmp].encode('ascii')
     
     # select corresponding fields
@@ -431,7 +431,7 @@ def HypocenterDistribution(xlsfile):
 		    col00 = col0[irow].strip()
 		else: 
 		    col00 = col0[irow]
-		    if isinstance( col00, unicode ):
+		    if isinstance( col00, str ):
 			col00 = col00.encode('ascii')
 		col_values.append( col00 )
 	    else:
@@ -467,9 +467,9 @@ def HypocenterDistribution(xlsfile):
 	irow += 1
 
     SrcAveRD_XY = []
-    EQkeys = SrcGroupRD.keys()
+    EQkeys = list(SrcGroupRD.keys())
 
-    for isrc in xrange( len(EQkeys) ):
+    for isrc in range( len(EQkeys) ):
 	key1 = EQkeys[isrc] 
 	dip = SrcGroupRD[key1][0] * np.pi/ 180. 
 	W = SrcGroupRD[key1][2]
@@ -483,12 +483,12 @@ def HypocenterDistribution(xlsfile):
 	    #print 'EQID', 'HypoDepth', 'Ztor','W','Dip'
 	    #print key1, HypoDepth, Ztor, W, dip*180./np.pi
         if Y < 0.1: 
-	    print 'EQID', 'HypoDepth', 'Ztor','W','Dip'
-	    print key1, HypoDepth, Ztor, W, dip*180./np.pi
+	    print('EQID', 'HypoDepth', 'Ztor','W','Dip')
+	    print(key1, HypoDepth, Ztor, W, dip*180./np.pi)
 	
 	# first find the correct sites to do the average:
 	Xs = []; Ys = []
-	for isite in xrange( len(SrcGroupX[key1]) ): 
+	for isite in range( len(SrcGroupX[key1]) ): 
 	    az = SrcGroupX[key1][isite][0]
 	    X = SrcGroupX[key1][isite][1]
 	    
@@ -634,7 +634,7 @@ if __name__ == '__main__':
 	    # set selection conditions follow Chiou and Youngs
 	    EQID_remove = [3,5,7,8,11,13,17,22,26,35,67,71,84,86,93,95,109,129,142,153,154,155,156]
 	    # Kobe event 128 doesn't have SA values 
-	    for ieq in xrange( len( EQID_remove) ):
+	    for ieq in range( len( EQID_remove) ):
 		EQID_remove[ieq] = '%4.4i'%EQID_remove[ieq]
 	    GMXC1_remove = ['','C','D','E','F','G','H',]   # put '' condition first
 	    
@@ -672,9 +672,9 @@ if __name__ == '__main__':
 	WriteSubsetNGA(nga_flats0, nga_IMs0, subfile )
 
 	# print the subset dimensions (as test)
-	print '# of Records:'
-	print '%s:   %s   %s'%('InfoEntry', 'Subset', 'Original')
-	for key in nga_flats.keys():
-	    print '%s:   %s   %s'%(key,len(nga_flats0[key]),len(nga_flats[key]) )
-	for key in nga_IMs.keys():
-	    print '%s:   %s   %s'%(key,len(nga_IMs0[key]),len(nga_IMs[key]) )
+	print('# of Records:')
+	print('%s:   %s   %s'%('InfoEntry', 'Subset', 'Original'))
+	for key in list(nga_flats.keys()):
+	    print('%s:   %s   %s'%(key,len(nga_flats0[key]),len(nga_flats[key]) ))
+	for key in list(nga_IMs.keys()):
+	    print('%s:   %s   %s'%(key,len(nga_IMs0[key]),len(nga_IMs[key]) ))

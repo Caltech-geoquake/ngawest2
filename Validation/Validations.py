@@ -53,7 +53,7 @@ else:
 
         # fault model
 	UCERF2_DM = load( inpth + '/metadata_UCERF2_DM2.py' ).UCERF2_DM
-	SourceNames = UCERF2_DM.keys() 
+	SourceNames = list(UCERF2_DM.keys()) 
 
 	# sites 
 	sites = {}
@@ -87,7 +87,7 @@ else:
 
 	filen = inpth + '/DisAgg_%s.txt'%SiteName 
 	lines = open(filen,'r').readlines() 
-	for il in xrange( 1, len(lines) ): 
+	for il in range( 1, len(lines) ): 
 	    spl = lines[il].strip().split() 
 	    Rjb0 = float(spl[-1])
 	    Rrup0 = float(spl[-4])
@@ -103,16 +103,16 @@ else:
 
 		    # method 1 (using srf file)
 		    Rjb1, Rrup1, Rx1 = DistanceToEvenlyGriddedSurface( SiteGeom, FaultGeom )
-		    print 'Using SRF file:' 
-		    print Rjb1, Rrup1, Rx1 
+		    print('Using SRF file:') 
+		    print(Rjb1, Rrup1, Rx1) 
 
 		if SingleTest:
 		    if Name == SelectSourceName:
 			# Test one by one
-			print '='*100
-			print 'UCERF2 DM2.1 Source Name: %s'%Name
-			print 'OpenSHA calculation: (Rjb, Rrup, Rx) '
-			print Rjb0, Rrup0, Rx0 
+			print('='*100)
+			print('UCERF2 DM2.1 Source Name: %s'%Name)
+			print('OpenSHA calculation: (Rjb, Rrup, Rx) ')
+			print(Rjb0, Rrup0, Rx0) 
 			
 			UpperSeisDepth = UCERF2_DM[Name]['AveUpperSeisDepth']
 			LowerSeisDepth = UCERF2_DM[Name]['AveLowerSeisDepth']
@@ -125,8 +125,8 @@ else:
 
 			daa = None; ddd = None 
 			Rjb2, Rrup2, Rx2 = DistanceToSimpleFaultSurface(SiteGeom,FaultTrace1, UpperSeisDepth,LowerSeisDepth,AveDip, GridSpaceAlongStrike=daa, GridSpaceDownDip=ddd,Fast=True,Debug=SingleTest)
-			print 'Distance Calculation in pynga (simple Fault Surface): '
-			print Rjb2, Rrup2, Rx2 
+			print('Distance Calculation in pynga (simple Fault Surface): ')
+			print(Rjb2, Rrup2, Rx2) 
 
 			# evenlygrided surface
 			#daa = ddd = 1.0
@@ -141,10 +141,10 @@ else:
 		
 		if not SingleTest:
 		    # run all
-		    print '='*100
-		    print 'UCERF2 DM2.1 Source Name: %s'%Name
-		    print 'OpenSHA calculation: (Rjb, Rrup, Rx) '
-		    print Rjb0, Rrup0, Rx0 
+		    print('='*100)
+		    print('UCERF2 DM2.1 Source Name: %s'%Name)
+		    print('OpenSHA calculation: (Rjb, Rrup, Rx) ')
+		    print(Rjb0, Rrup0, Rx0) 
 		    
 		    UpperSeisDepth = UCERF2_DM[Name]['AveUpperSeisDepth']
 		    LowerSeisDepth = UCERF2_DM[Name]['AveLowerSeisDepth']
@@ -155,8 +155,8 @@ else:
 		    ax.hold(True)
 		    daa = None; ddd = None 
 		    Rjb2, Rrup2, Rx2 = DistanceToSimpleFaultSurface(SiteGeom,FaultTrace1, UpperSeisDepth,LowerSeisDepth,AveDip, GridSpaceAlongStrike=daa, GridSpaceDownDip=ddd,Fast=True)
-		    print 'Distance Calculation in pynga (simple Fault Surface): '
-		    print Rjb2, Rrup2, Rx2 
+		    print('Distance Calculation in pynga (simple Fault Surface): ')
+		    print(Rjb2, Rrup2, Rx2) 
 		    
 		    Rjberr.append( Rjb2-Rjb0 )
 		    Rruperr.append( Rrup2-Rrup0 )
@@ -207,7 +207,7 @@ else:
 	siteinfofile = inpth + '/cs_site_types.txt'
 	lines = open( siteinfofile, 'r' ).readlines() 
 	site_info = {}
-	for il in xrange(1,len(lines)): 
+	for il in range(1,len(lines)): 
 	    spl = lines[il].strip().split() 
 	    stanam = spl[0] 
 	    site_info[stanam] = [float(spl[2]),float(spl[1]),0.0]   # lon, lat, dep
@@ -231,11 +231,11 @@ else:
 	err = {}
 	errR = {}
 	siteErr = {}
-	for ikey in xrange( len(DistKey) ): 
+	for ikey in range( len(DistKey) ): 
 	    err[DistKey[ikey]] = []
 	    errR[DistKey[ikey]] = []
 
-	Nsta = len(sitesO.keys()) 
+	Nsta = len(list(sitesO.keys())) 
 	for isite,SiteName in enumerate( sitesO.keys() ): 
 	    try: 
 		SiteGeo = site_info[SiteName]
@@ -245,7 +245,7 @@ else:
 	    sitesP[SiteName] = [SiteGeo[0], SiteGeo[1], Rjb,Rrup,Rx]
 	    
 	    siteErr[SiteName] = [SiteGeo[0], SiteGeo[1]] 
-	    for ikey in xrange( len(DistKey) ): 
+	    for ikey in range( len(DistKey) ): 
 		DistP = sitesP[SiteName][ikey+2]
 		DistO = sitesO[SiteName][ikey+2]
 		err0 = DistP-DistO
@@ -289,7 +289,7 @@ else:
 	# err (P-O)
 	fig = plt.figure(1) 
 	clr=['r','g','b']
-	for ikey in xrange(len(DistKey) ):
+	for ikey in range(len(DistKey) ):
 	    key = DistKey[ikey] 
 	    ax = fig.add_subplot( 2,2,ikey+1 )
 	    ax.plot(err[key], clr[ikey]+'o')
@@ -303,7 +303,7 @@ else:
 	    # Relative err (P-O)/O
 	    fig = plt.figure(2) 
 	    clr=['r','g','b']
-	    for ikey in xrange(len(DistKey) ):
+	    for ikey in range(len(DistKey) ):
 		key = DistKey[ikey] 
 		ax = fig.add_subplot( 2,2,ikey+1 )
 		ax.plot(errR[key], clr[ikey]+'o')
