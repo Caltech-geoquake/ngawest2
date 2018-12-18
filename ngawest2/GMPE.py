@@ -132,18 +132,96 @@ def GMPE_array(model_name, Mw, Rjb, Vs30, period_array, epislon=0, NGAs=None,
     if not isinstance(period_array, collections.Iterable):
         raise TypeError('`period_array` must be a array-like object.')
 
+    TsDict14 = {
+        'BSSA': [0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.10, 0.15, 0.20, 0.25,
+              0.30, 0.40, 0.50, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.5, 10.0],
+        'CB': [0.01, 0.02, 0.03, 0.05, 0.075, 0.10, 0.15, 0.20, 0.25,
+              0.30, 0.40, 0.50, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.5, 10.0],
+        'CY': [0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.10, 0.12, 0.15, 0.17, 0.20, 0.25,
+              0.30, 0.40, 0.50, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.5, 10.0],
+        'ASK': [0.01, 0.02, 0.03, 0.05, 0.075, 0.10, 0.15, 0.20, 0.25,
+              0.30, 0.40, 0.50, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5, 10.0],
+        }
+
     results = []
     for period in period_array:
-        result_ = GMPE(model_name, Mw, Rjb, Vs30, period, epislon=epislon,
-                       NGAs=NGAs, rake=rake, Mech=Mech, Ftype=Ftype, Fnm=Fnm,
-                       Frv=Frv, dip=dip, W=W, Ztor=Ztor, Zhypo=Zhypo, Fas=Fas,
-                       Rrup=Rrup, Rx=Rx, Fhw=Fhw, azimuth=azimuth,
-                       VsFlag=VsFlag, Z25=Z25, Z15=Z15, Z10=Z10,
-                       ArbCB=ArbCB, SJ=SJ,country=country, region=region,
-                       Dregion=Dregion, CRjb=CRjb, Ry0=Ry0, D_DPP=D_DPP)
+        if period < 0:
+            raise ValueError('Period value must be positive')
+        if period in TsDict14[model_name]:
+            result_ = GMPE(model_name, Mw, Rjb, Vs30, period, epislon=epislon,
+                           NGAs=NGAs, rake=rake, Mech=Mech, Ftype=Ftype, Fnm=Fnm,
+                           Frv=Frv, dip=dip, W=W, Ztor=Ztor, Zhypo=Zhypo, Fas=Fas,
+                           Rrup=Rrup, Rx=Rx, Fhw=Fhw, azimuth=azimuth,
+                           VsFlag=VsFlag, Z25=Z25, Z15=Z15, Z10=Z10,
+                           ArbCB=ArbCB, SJ=SJ,country=country, region=region,
+                           Dregion=Dregion, CRjb=CRjb, Ry0=Ry0, D_DPP=D_DPP)
+        else:  # needs interpolation
+            low_i, high_i, T_low, T_high = _find_T_indices(TsDict14[model_name], period)
+            result1 = GMPE(model_name, Mw, Rjb, Vs30, T_low, epislon=epislon,
+                           NGAs=NGAs, rake=rake, Mech=Mech, Ftype=Ftype, Fnm=Fnm,
+                           Frv=Frv, dip=dip, W=W, Ztor=Ztor, Zhypo=Zhypo, Fas=Fas,
+                           Rrup=Rrup, Rx=Rx, Fhw=Fhw, azimuth=azimuth,
+                           VsFlag=VsFlag, Z25=Z25, Z15=Z15, Z10=Z10,
+                           ArbCB=ArbCB, SJ=SJ,country=country, region=region,
+                           Dregion=Dregion, CRjb=CRjb, Ry0=Ry0, D_DPP=D_DPP)
+
+            result2 = GMPE(model_name, Mw, Rjb, Vs30, T_high, epislon=epislon,
+                           NGAs=NGAs, rake=rake, Mech=Mech, Ftype=Ftype, Fnm=Fnm,
+                           Frv=Frv, dip=dip, W=W, Ztor=Ztor, Zhypo=Zhypo, Fas=Fas,
+                           Rrup=Rrup, Rx=Rx, Fhw=Fhw, azimuth=azimuth,
+                           VsFlag=VsFlag, Z25=Z25, Z15=Z15, Z10=Z10,
+                           ArbCB=ArbCB, SJ=SJ,country=country, region=region,
+                           Dregion=Dregion, CRjb=CRjb, Ry0=Ry0, D_DPP=D_DPP)
+
+            result_ = [None] * len(result1)
+            for j in range(len(result_)):
+                result_[j] = np.interp(period, [T_low, T_high],
+                                       [result1[j], result2[j]])
+
         results.append(result_)
 
     results_T = list(zip(*results))
 
     return tuple([np.array(_) for _ in results_T])
+
+#%%----------------------------------------------------------------------------
+def _find_T_indices(T_array, T_val, T_min=0.01, T_max=10):
+    '''
+    Find the low and high indices surrounding the T_val provided from T_array.
+    '''
+
+    if T_val < T_min or T_val > T_max:
+        raise ValueError('T out of range, should be between %.3g and %.3g sec.'
+                         % (T_min, T_max))
+
+    T_array = np.array(T_array)  # convert to numpy array
+
+    if any(T_val == T_array):
+        high_index = low_index = np.argwhere(T_val == T_array)[0][0]
+    else:
+        high_index = np.argwhere(T_val <= T_array)[0][0]
+        low_index = max(high_index - 1, 0)  # safeguarding, if high_index is already 0
+
+    T_low = T_array[low_index]
+    T_high = T_array[high_index]
+
+    return low_index, high_index, T_low, T_high
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
