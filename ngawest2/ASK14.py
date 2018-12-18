@@ -67,8 +67,7 @@ class ASK14_nga:
         if T in self.periods:
             self.T = T
         else:
-            print('T is not in periods list, try to interpolate')
-            raise ValueError
+            raise ValueError('T is not in periods list, try to interpolate')
 
         self.c = 2.4*(self.T != -2) + 2400*(self.T == -2)
 
@@ -81,15 +80,13 @@ class ASK14_nga:
             self.Frv = 1*(Ftype == 'RV')
         else:
             if rake == None or rake < -180 or rake > 180.:
-                print('rake angle should be within [-180,180]')
-                raise ValueError
+                raise ValueError('rake angle should be within [-180,180]')
             else:
                 self.Frv, self.Fnm = rake2ftype_AS( self.rake )
 
         if W == None:
             if self.rake == None:
-                print('you should give either the fault width W or the rake angle')
-                raise ValueError
+                raise ValueError('you should give either the fault width W or the rake angle')
             else:
                 self.W = calc_W(self.M,self.rake)
         else:
@@ -97,8 +94,7 @@ class ASK14_nga:
 
         if dip == None:
             if self.rake == None:
-                print('you should give either the fault dip angle or the rake angle')
-                raise ValueError
+                raise ValueError('you should give either the fault dip angle or the rake angle')
             else:
                 self.dip = calc_dip( self.rake )
         else:
@@ -107,8 +103,7 @@ class ASK14_nga:
         if Ztor == None:
             if Zhypo == None:
                 if self.rake == None:
-                    print('you should give either the Ztor or the rake angle')
-                    raise ValueError
+                    raise ValueError('you should give either the Ztor or the rake angle')
                 else:
                     Zhypo = calc_Zhypo( self.M, self.rake )
             self.Ztor = calc_Ztor( W, self.dip, Zhypo )
@@ -119,8 +114,7 @@ class ASK14_nga:
 
         if Fhw == None:
             if azimuth == None and Rx == None:
-                print('either one of azimuth angle, Rx and Fhw has to be specified')
-                raise ValueError
+                raise ValueError('either one of azimuth angle, Rx and Fhw has to be specified')
 
             if azimuth != None:
                 if 0 <= azimuth <= 180. and dip != 90.:

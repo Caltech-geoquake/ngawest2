@@ -88,26 +88,21 @@ class BSSA14_nga:
         if T in self.periods:
             self.T = T
         else:
-            print('T is not in periods list, try to interpolate')
-            raise ValueError
+            raise ValueError('T is not in periods list, try to interpolate')
 
         # check inputs
         if self.M == None or self.M < 0:
-            print('Moment magnitude must be a postive number')
-            raise ValueError
+            raise ValueError('Moment magnitude must be a postive number')
         if self.Rjb == None or self.Rjb < 0:
-            print('Joyner-Boore distance must be a non-negative number')
-            raise ValueError
+            raise ValueError('Joyner-Boore distance must be a non-negative number')
         if self.Vs30 == None or self.Vs30 < 0:
-            print('Vs30 must be a positive number')
-            raise ValueError
+            raise ValueError('Vs30 must be a positive number')
 
         self.rake = rake
         self.Mech = Mech
 
         if rake == None and Mech == None and Ftype == None:
-            print('either rake or (U,SS,NM,RV) should be provided')
-            raise ValueError
+            raise ValueError('either rake or (U,SS,NM,RV) should be provided')
         else:
             if Ftype != None:
                 self.U = 1*(Ftype == 'U')
@@ -154,10 +149,10 @@ class BSSA14_nga:
     def ftype(self):
         FT = rake2ftype_BA( self.rake )   # change in this version
         if FT not in self.faults:
-            print('Invalid fault type!')
-            print('It should be in one of the following list:')
-            print(self.faults)
-            raise ValueError
+            raise ValueError('%s\n%s\n%s' % \
+                            ('Invalid fault type!',
+                            'It should be in one of the following list:',
+                            self.faults)
         else:
             if FT == 'unspecified' or FT == 'U':
                 self.U = 1

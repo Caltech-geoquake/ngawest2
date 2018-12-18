@@ -75,18 +75,14 @@ class CB14_nga():
         if T in self.periods:
             self.T = T
         else:
-            print('T is not in periods list, try to interpolate')
-            raise ValueError
+            raise ValueError('T is not in periods list, try to interpolate')
 
         if self.M == None or self.M < 0:
-            print('Moment magnitude must be a postive number')
-            raise ValueError
+            raise ValueError('Moment magnitude must be a postive number')
         if self.Rjb == None or self.Rjb < 0:
-            print('Joyner-Boore distance must be a non-negative number')
-            raise ValueError
+            raise ValueError('Joyner-Boore distance must be a non-negative number')
         if self.Vs30 == None or self.Vs30 < 0:
-            print('Vs30 must be a positive number')
-            raise ValueError
+            raise ValueError('Vs30 must be a positive number')
 
         # Determine the Fault-related parameters (if necessary)
         if Ftype != None:
@@ -94,15 +90,13 @@ class CB14_nga():
             self.Frv = 1*(Ftype == 'RV')
         else:
             if rake == None or rake < -180 or rake > 180.:
-                print('rake angle should be within [-180,180]')
-                raise ValueError
+                raise ValueError('rake angle should be within [-180,180]')
             else:
                 self.Frv, self.Fnm = rake2ftype_CB( self.rake )
 
         if W == None:
             if self.rake == None:
-                print('you should give either the fault width W or the rake angle')
-                raise ValueError
+                raise ValueError('you should give either the fault width W or the rake angle')
             else:
                 self.W = calc_W(self.M,self.rake)
         else:
@@ -110,8 +104,7 @@ class CB14_nga():
 
         if dip == None:
             if self.rake == None:
-                print('you should give either the fault dip angle or the rake angle')
-                raise ValueError
+                raise ValueError('you should give either the fault dip angle or the rake angle')
             else:
                 self.dip = calc_dip( self.rake )
         else:
@@ -125,8 +118,7 @@ class CB14_nga():
         if Ztor == None:
             if Zhypo == None:
                 if self.rake == None:
-                    print('you should give either the Ztor or the rake angle')
-                    raise ValueError
+                    raise ValueError('you should give either the Ztor or the rake angle')
                 else:
                     Zhypo = calc_Zhypo( self.M, self.rake )
             self.Ztor = calc_Ztor( W, self.dip, Zhypo )

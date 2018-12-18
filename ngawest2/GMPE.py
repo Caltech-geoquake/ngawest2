@@ -43,12 +43,10 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
 
     # check the input period
     # Note: this function is better used at a given period with a set of other parameters (not with a set of periods)
-    if period > 10.0 or 0<period<0.01:
-        print('Positive period value should be within [0.01,10] for SA at corresponding periods')
-        raise ValueError
+    if period > 10.0 or 0 < period < 0.01:
+        raise ValueError('Positive period value should be within [0.01,10] for SA at corresponding periods')
     if period < 0 and period not in [-1,-2]:
-        print('negative period should be -1,-2 for PGA and PGV')
-        raise ValueError
+        raise ValueError('negative period should be -1,-2 for PGA and PGV')
 
     if model_name == 'BSSA':
         ngaM = BSSA14.BSSA14_nga()
