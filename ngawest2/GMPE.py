@@ -38,7 +38,6 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
             NGAs['ASK'] = NGAs['AS']
 
     dict1 = NGAs
-    itmp = 0
 
     # check the input period
     # Note: this function is better used at a given period with a set of other parameters (not with a set of periods)
@@ -81,18 +80,11 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
 
     # common interpolate for all models
     periods = np.array(ngaM.periods)
-    for ip in range( len(periods) ):
-        if abs( period-periods[ip] ) < 0.0001:
-            # period is within the periods list
-            itmp = 1
-            break
-
-    if itmp == 1:
+    if period in periods:
         # compute median, std directly for the existing period in the period list of the NGA model
         values = utils.mapfunc( ngaM, Mw, Rjb, Vs30, period, rake, **kwds )
         values = np.array( values )
-
-    if itmp == 0:
+    else:
         #print 'do the interpolation for periods that is not in the period list of the NGA model'
         ind_low = (periods <= period*1.0).nonzero()[0]
         ind_high = (periods >= period*1.0).nonzero()[0]
@@ -154,6 +146,9 @@ def GMPE_array(model_name, Mw, Rjb, Vs30, period_array, epislon=0, NGAs=None,
     if not isinstance(period_array, collections.Iterable):
         raise TypeError('`period_array` must be a array-like object.')
 
+    if model_name not in {'BSSA', 'CB', 'CY', 'ASK'}:
+        raise ValueError("`model_name` must be one of {'ASK', 'BSSA', 'CB', 'CY'}")
+
     results = []
     for period in period_array:
         if period < 0:
@@ -171,3 +166,4 @@ def GMPE_array(model_name, Mw, Rjb, Vs30, period_array, epislon=0, NGAs=None,
     results_T = list(zip(*results))
 
     return tuple([np.array(_) for _ in results_T])
+
