@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-from .utils import *
+import os
+import numpy as np
+
+from . import utils
 
 class CY14_nga:
     """
@@ -30,7 +33,7 @@ class CY14_nga:
         coefs = inputs[:,1:]
         for i in range( len(self.periods) ):
             T1 = self.periods[i]
-            Tkey = GetKey(T1)
+            Tkey = utils.GetKey(T1)
 
             # periods list ( -2: PGV, -1: PGA ) (mapping between the NGA models accordingly, -1: PGV, 0: PGA)
             if Tkey == '-1.000':
@@ -82,13 +85,13 @@ class CY14_nga:
             if rake == None or rake < -180 or rake > 180.:
                 raise ValueError('rake angle should be within [-180,180]')
             else:
-                self.Frv, self.Fnm = rake2ftype_CY( self.rake )
+                self.Frv, self.Fnm = utils.rake2ftype_CY( self.rake )
 
         if W == None:
             if self.rake == None:
                 raise ValueError('you should give either the fault width W or the rake angle')
             else:
-                W = calc_W(self.M,self.rake)
+                W = utils.calc_W(self.M,self.rake)
         else:
             self.W = W
 
@@ -96,12 +99,12 @@ class CY14_nga:
             if self.rake == None:
                 raise ValueError('you should give either the fault dip angle or the rake angle')
             else:
-                self.dip = calc_dip( self.rake )
+                self.dip = utils.calc_dip( self.rake )
         else:
             self.dip = dip
 
         if Zhypo == None:
-            self.Zhypo = calc_Zhypo(self.M,self.rake)
+            self.Zhypo = utils.calc_Zhypo(self.M,self.rake)
         else:
             self.Zhypo = Zhypo
 
@@ -110,10 +113,10 @@ class CY14_nga:
                 if self.rake == None:
                     raise ValueError('you should give either the Ztor or the rake angle')
                 else:
-                    Zhypo = calc_Zhypo( self.M, self.rake )
+                    Zhypo = utils.calc_Zhypo( self.M, self.rake )
             if not W:
                 W = calc_W(self.M, self.rake)
-            self.Ztor = calc_Ztor( W, self.dip, Zhypo )
+            self.Ztor = utils.calc_Ztor( W, self.dip, Zhypo )
         else:
             self.Ztor = Ztor
 
@@ -151,11 +154,11 @@ class CY14_nga:
         elif azimuth <= 0.0:
             Rx = 0.0
         if Rx == None:
-            self.Rx = calc_Rx( self.Rjb, self.Ztor, W, self.dip, azimuth, Rrup )
+            self.Rx = utils.calc_Rx( self.Rjb, self.Ztor, W, self.dip, azimuth, Rrup )
         else:
             self.Rx = Rx
         if Rrup == None:
-            self.Rrup = calc_Rrup( self.Rx, self.Ztor, W, self.dip, azimuth, self.Rjb )
+            self.Rrup = utils.calc_Rrup( self.Rx, self.Ztor, W, self.dip, azimuth, self.Rjb )
         else:
             self.Rrup = Rrup
 
@@ -179,7 +182,7 @@ class CY14_nga:
         # update coeficient
         if NewCoefs != None:
             NewCoefKeys = list(NewCoefs.keys())
-            Tkey = GetKey(self.T)
+            Tkey = utils.GetKey(self.T)
             for key in NewCoefKeys:
                 self.Coefs[Tkey][key] = NewCoefs[key]
 
@@ -190,7 +193,7 @@ class CY14_nga:
 
 
     def flt_function(self):
-        Ti = GetKey(self.T)
+        Ti = utils.GetKey(self.T)
 
         c1 = self.Coefs[Ti]['c1']
         c1a = self.Coefs[Ti]['c1a']
@@ -225,7 +228,7 @@ class CY14_nga:
         return MeanZtor
 
     def moment_function(self):
-        Ti = GetKey(self.T)
+        Ti = utils.GetKey(self.T)
         c3 = self.Coefs[Ti]['c3']
         cn = self.Coefs[Ti]['cn']
         cM = self.Coefs[Ti]['cM']
@@ -234,7 +237,7 @@ class CY14_nga:
         return term2
 
     def distance_function( self ):
-        Ti = GetKey(self.T)
+        Ti = utils.GetKey(self.T)
         c5 = self.Coefs[Ti]['c5']
         c6 = self.Coefs[Ti]['c6']
         cHM = self.Coefs[Ti]['cHM']
@@ -248,7 +251,7 @@ class CY14_nga:
         return term3+term4+term5
 
     def directivity_function(self):
-        Ti = GetKey(self.T)
+        Ti = utils.GetKey(self.T)
 
         c8b = self.Coefs[Ti]['c8b']
         d_taper = max([1-max([self.Rrup-40,0])/30.,0])
@@ -258,7 +261,7 @@ class CY14_nga:
         return term6
 
     def hw_function(self):
-        Ti = GetKey(self.T)
+        Ti = utils.GetKey(self.T)
 
         c9 = self.Coefs[Ti]['c9']
         c9a = self.Coefs[Ti]['c9a']
@@ -276,7 +279,7 @@ class CY14_nga:
         return lnYref
 
     def site_function( self ):
-        Ti = GetKey(self.T)
+        Ti = utils.GetKey(self.T)
 
         f1 = self.Coefs[Ti]['phi1']
         f2 = self.Coefs[Ti]['phi2']
@@ -306,9 +309,9 @@ class CY14_nga:
 
     def basin_function(self,Z10=None,Tother=None):
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
 
         if Z10 != None:
             self.Z10 = Z10
@@ -342,7 +345,7 @@ class CY14_nga:
 
     def calc_NL(self):
 
-        Ti = GetKey( self.T )
+        Ti = utils.GetKey( self.T )
 
         f2 = self.Coefs[Ti]['phi2']
         f3 = self.Coefs[Ti]['phi3']
@@ -357,7 +360,7 @@ class CY14_nga:
 
 
     def calc_sigma_tau(self):
-        Ti = GetKey(self.T)
+        Ti = utils.GetKey(self.T)
         if self.VsFlag == 0:
             Finfer = 1
             Fmeasure = 0
@@ -414,7 +417,7 @@ def CY14nga_test(T,CoefTerms):
     CYnga = CY14_nga()
 
     kwds= {'Ftype':Ftype,'Ztor':Ztor,'dip':dip,'Rrup':Rrup,'Rx':Rx,'Z10':Z10,'AS':AS,'VsFlag':VsFlag,'CoefTerms':CoefTerms}
-    values = mapfunc( CYnga, M, Rjb, Vs30, T, rake, **kwds )
+    values = utils.mapfunc( CYnga, M, Rjb, Vs30, T, rake, **kwds )
     print('Median, SigmaT, Tau, Sigma')
     for i in range( len(values) ):
         print(values[i])
@@ -425,7 +428,8 @@ if __name__ == '__main__':
 
     NewCoefs=None
     CoefTerms = {'terms':(1,1,1,1,1,1,1),'NewCoefs':NewCoefs}
-    Ts = [0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.12, 0.15, 0.17, 0.2, 0.25, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.5, 10.0]
+    Ts = [0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1, 0.12, 0.15, 0.17, 0.2,
+          0.25, 0.3, 0.4, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.5, 10.0]
     Ts = [1.0, 3.0]
     for T in Ts:
     #for T in [0.3, ]:

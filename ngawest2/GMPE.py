@@ -27,9 +27,9 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
          D_DPP=0):
 
     if NGAs == None:
-        NGAs={'CB':{'NewCoefs':None,'terms':(1,1,1,1,1,1,1,1,1)},\
-              'BSSA':{'NewCoefs':None,'terms':(1,1,1)},\
-              'CY':{'NewCoefs':None,'terms':(1,1,1,1,1,1,1)},\
+        NGAs={'CB':{'NewCoefs':None,'terms':(1,1,1,1,1,1,1,1,1)},
+              'BSSA':{'NewCoefs':None,'terms':(1,1,1)},
+              'CY':{'NewCoefs':None,'terms':(1,1,1,1,1,1,1)},
               'ASK':{'NewCoefs':None,'terms':(1,1,1,1,1,1,1)}}
     else:
 
@@ -50,24 +50,36 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
 
     if model_name == 'BSSA':
         ngaM = BSSA14.BSSA14_nga()
-        kwds = {'Mech':Mech,'Ftype':Ftype,'Z10':Z10,'Dregion':Dregion,'country':country,'CoefTerms':dict1[model_name]}
+        kwds = {'Mech': Mech, 'Ftype': Ftype, 'Z10': Z10, 'Dregion': Dregion,
+                'country': country, 'CoefTerms': dict1[model_name]}
 
     if model_name == 'CB':
         ngaM = CB14.CB14_nga()
         if Fhw is None:
             Fhw = 0
-        kwds = {'Ftype':Ftype,'Rrup':Rrup,'Ztor':Ztor,'dip':dip,'Z25':Z25,'W':W,'Zhypo':Zhypo,'azimuth':azimuth,'Fhw':Fhw,'Z10':Z10,'Z15':Z15,'Arb':ArbCB,'SJ':SJ,'region':region,'CoefTerms':dict1[model_name]}
+        kwds = {'Ftype': Ftype, 'Rrup': Rrup, 'Ztor': Ztor, 'dip': dip,
+                'Z25': Z25, 'W': W, 'Zhypo': Zhypo, 'azimuth': azimuth,
+                'Fhw': Fhw, 'Z10': Z10, 'Z15': Z15, 'Arb': ArbCB, 'SJ': SJ,
+                'region': region, 'CoefTerms': dict1[model_name]}
 
     if model_name == 'CY':
         ngaM = CY14.CY14_nga()
-        kwds = {'Ftype':Ftype,'Rrup':Rrup,'Rx':Rx,'Ztor':Ztor,'dip':dip,'W':W,'Zhypo':Zhypo,'azimuth':azimuth,'Fhw':Fhw,'Z10':Z10,'AS':Fas,'VsFlag':VsFlag,'country':country,'D_DPP':D_DPP,'CoefTerms':dict1[model_name]}
+        kwds = {'Ftype': Ftype, 'Rrup': Rrup, 'Rx': Rx, 'Ztor': Ztor,
+                'dip': dip, 'W': W, 'Zhypo': Zhypo, 'azimuth': azimuth,
+                'Fhw': Fhw, 'Z10': Z10, 'AS': Fas, 'VsFlag': VsFlag,
+                'country': country, 'D_DPP': D_DPP,
+                'CoefTerms': dict1[model_name]}
         # the new CY model treat PGA = SA(0.01)
         if period == -1:
             period = 0.01
 
     if model_name == 'ASK':
         ngaM = ASK14.ASK14_nga()
-        kwds = {'Ftype':Ftype,'Rrup':Rrup,'Rx':Rx,'Ztor':Ztor,'dip':dip,'W':W,'Zhypo':Zhypo,'azimuth':azimuth,'Fhw':Fhw,'Z10':Z10,'Fas':Fas,'CRjb':CRjb,'Ry0':Ry0,'region':region,'country':country,'VsFlag':VsFlag, 'CoefTerms':dict1[model_name]}
+        kwds = {'Ftype': Ftype, 'Rrup': Rrup, 'Rx': Rx, 'Ztor': Ztor,
+                'dip': dip, 'W': W, 'Zhypo': Zhypo, 'azimuth': azimuth,
+                'Fhw': Fhw, 'Z10': Z10, 'Fas': Fas, 'CRjb': CRjb, 'Ry0': Ry0,
+                'region': region, 'country': country, 'VsFlag': VsFlag,
+                'CoefTerms': dict1[model_name]}
 
     # common interpolate for all models
     periods = np.array(ngaM.periods)
@@ -89,17 +101,27 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
 
         period_low = max( periods[ind_low] )
         period_high = min( periods[ind_high] )
-        values_low = np.array( utils.mapfunc( ngaM, Mw, Rjb, Vs30, period_low, rake, **kwds ) )
-        values_high = np.array( utils.mapfunc( ngaM, Mw, Rjb, Vs30, period_high, rake, **kwds ) )
+        values_low = np.array(utils.mapfunc(ngaM, Mw, Rjb, Vs30, period_low,
+                                            rake, **kwds))
+        values_high = np.array(utils.mapfunc(ngaM, Mw, Rjb, Vs30, period_high,
+                                             rake, **kwds))
         N1,N2 = np.array(values_low).shape
         values = np.zeros( (N1,N2) )
         for icmp in range( N2 ):
             if icmp != 0:
                 # stardand values are in ln (g)
-                values[:,icmp] = utils.logline( np.log(period_low), np.log(period_high), values_low[:,icmp], values_high[:,icmp], np.log(period) )
+                values[:,icmp] = utils.logline(np.log(period_low),
+                                               np.log(period_high),
+                                               values_low[:,icmp],
+                                               values_high[:,icmp],
+                                               np.log(period) )
             else:
                 # median value is in g
-                values[:,icmp] = utils.logline( np.log(period_low), np.log(period_high), np.log(values_low[:,icmp]), np.log(values_high[:,icmp]), np.log(period) )
+                values[:,icmp] = utils.logline(np.log(period_low),
+                                               np.log(period_high),
+                                               np.log(values_low[:,icmp]),
+                                               np.log(values_high[:,icmp]),
+                                               np.log(period))
                 values[:,icmp] = np.exp( values[:,icmp] )    # change the median into g unit (logline gives the result in ln(g))
 
     # outputs

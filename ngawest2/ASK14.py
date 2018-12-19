@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-from .utils import *
+
+import os
+import numpy as np
+
+from . import utils
 
 class ASK14_nga:
     """
@@ -30,7 +34,7 @@ class ASK14_nga:
         coefs = inputs[:,1:]
         for i in range( len(self.periods) ):
             T1 = self.periods[i]
-            Tkey = GetKey(T1)
+            Tkey = utils.GetKey(T1)
 
             # periods list ( -2: PGV, -1: PGA ) (mapping between the NGA models accordingly, -1: PGV, 0: PGA)
             if Tkey == '-1.000':
@@ -82,13 +86,13 @@ class ASK14_nga:
             if rake == None or rake < -180 or rake > 180.:
                 raise ValueError('rake angle should be within [-180,180]')
             else:
-                self.Frv, self.Fnm = rake2ftype_AS( self.rake )
+                self.Frv, self.Fnm = utils.rake2ftype_AS( self.rake )
 
         if W == None:
             if self.rake == None:
                 raise ValueError('you should give either the fault width W or the rake angle')
             else:
-                self.W = calc_W(self.M,self.rake)
+                self.W = utils.calc_W(self.M,self.rake)
         else:
             self.W = W
 
@@ -96,7 +100,7 @@ class ASK14_nga:
             if self.rake == None:
                 raise ValueError('you should give either the fault dip angle or the rake angle')
             else:
-                self.dip = calc_dip( self.rake )
+                self.dip = utils.calc_dip( self.rake )
         else:
             self.dip = dip
 
@@ -105,10 +109,10 @@ class ASK14_nga:
                 if self.rake == None:
                     raise ValueError('you should give either the Ztor or the rake angle')
                 else:
-                    Zhypo = calc_Zhypo( self.M, self.rake )
+                    Zhypo = utils.calc_Zhypo( self.M, self.rake )
             if not W:
-                W = calc_W(self.M, self.rake)
-            self.Ztor = calc_Ztor( W, self.dip, Zhypo )
+                W = utils.calc_W(self.M, self.rake)
+            self.Ztor = utils.calc_Ztor( W, self.dip, Zhypo )
         else:
             self.Ztor = Ztor
 
@@ -149,11 +153,13 @@ class ASK14_nga:
         elif azimuth <= 0.0:
             Rx = 0.0
         if Rx == None:
-            self.Rx = calc_Rx( self.Rjb, self.Ztor, self.W, self.dip, azimuth, Rrup )
+            self.Rx = utils.calc_Rx( self.Rjb, self.Ztor, self.W, self.dip,
+                                    azimuth, Rrup )
         else:
             self.Rx = Rx
         if Rrup == None:
-            self.Rrup = calc_Rrup( self.Rx, self.Ztor, self.W, self.dip, azimuth, self.Rjb )
+            self.Rrup = utils.calc_Rrup( self.Rx, self.Ztor, self.W, self.dip,
+                                        azimuth, self.Rjb )
         else:
             self.Rrup = Rrup
 
@@ -181,7 +187,7 @@ class ASK14_nga:
         # update coeficient
         if NewCoefs != None:
             NewCoefKeys = list(NewCoefs.keys())
-            Tkey = GetKey(self.T)
+            Tkey = utils.GetKey(self.T)
             for key in NewCoefKeys:
                 self.Coefs[Tkey][key] = NewCoefs[key]
 
@@ -195,9 +201,9 @@ class ASK14_nga:
     def base_model(self,Tother=None):
         # Basically, this is the distance-magnitude term
         if Tother != None:
-            Ti = GetKey(Tother)
+            Ti = utils.GetKey(Tother)
         else:
-            Ti = GetKey(self.T)
+            Ti = utils.GetKey(self.T)
 
         c4 = self.Coefs[Ti]['c4']
         a1 = self.Coefs[Ti]['a1']
@@ -227,9 +233,9 @@ class ASK14_nga:
     def flt_function(self,Tother=None):
         # fault type and aftershock flag
         if Tother != None:
-            Ti = GetKey(Tother)
+            Ti = utils.GetKey(Tother)
         else:
-            Ti = GetKey(self.T)
+            Ti = utils.GetKey(self.T)
 
         a11 = self.Coefs[Ti]['a11']
         a12 = self.Coefs[Ti]['a12']
@@ -248,9 +254,9 @@ class ASK14_nga:
         # depth to top of rupture model
 
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
 
         a15 = self.Coefs[Ti]['a15']
 
@@ -269,9 +275,9 @@ class ASK14_nga:
 
         else:
             if Tother != None:
-                Ti = GetKey( Tother )
+                Ti = utils.GetKey( Tother )
             else:
-                Ti = GetKey( self.T )
+                Ti = utils.GetKey( self.T )
             a13 = self.Coefs[Ti]['a13']
 
             # taper1
@@ -342,10 +348,10 @@ class ASK14_nga:
     def soil_function(self,Z10=None,Vs30=None,Tother=None):
         # soil depth function
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
             T = Tother
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
             T = self.T
 
         if Z10 == None:
@@ -393,10 +399,10 @@ class ASK14_nga:
         # Site-response model
 
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
             T = Tother
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
             T = self.T
 
         a10 = self.Coefs[Ti]['a10']
@@ -422,7 +428,7 @@ class ASK14_nga:
         # compute SA1100 (different from AS08)
         SA1100Rock = 0.0
         Vs30Rock = 1100.
-        Z10Rock = calc_Z1( Vs30Rock, 'AS' )/1000.   # attention here
+        Z10Rock = utils.calc_Z1( Vs30Rock, 'AS' )/1000.   # attention here
         Tother = self.T    # SA at current period !
         #cout << "Z10Rock: " << Z10Rock << ", Z10hat: " << Z10hat << ", a46: " << s_a46[iT] << ", term: " << tmp << endl;
         SA1100 = self.base_model(Tother=Tother)+self.flt_function(Tother=Tother)+\
@@ -435,10 +441,10 @@ class ASK14_nga:
 
     def RegionalCorrection(self, Vs30=None, Rrup=None, Tother=None):
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
             T = Tother
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
             T = self.T
         if Vs30 == None:
             Vs30 = self.Vs30
@@ -502,7 +508,7 @@ class ASK14_nga:
 
     # compute standard deviations
     def calc_alpha(self):
-        Ti = GetKey( self.T )
+        Ti = utils.GetKey( self.T )
         Vlin = self.Coefs[Ti]['VLIN']
         b = self.Coefs[Ti]['b']
 
@@ -516,7 +522,7 @@ class ASK14_nga:
         return alpha
 
     def calc_sigma_tau(self):
-        Ti = GetKey( self.T )
+        Ti = utils.GetKey( self.T )
         if self.country != 'Japan':
             if self.VsFlag == 0:
                 s1 = self.Coefs[Ti]['s01']
@@ -581,7 +587,7 @@ def ASK14nga_test(T,CoefTerms):
     ASKnga = ASK14_nga()
 
     kwds = {'Ftype':Ftype,'Rrup':Rrup,'Rx':Rx,'dip':dip,'Ztor':Ztor,'W':W,'Z10':Z10,'Fas':Fas,'VsFlag':VsFlag,'CoefTerms':CoefTerms}
-    values = mapfunc( ASKnga, Mw, Rjb, Vs30, T, rake, **kwds )
+    values = utils.mapfunc( ASKnga, Mw, Rjb, Vs30, T, rake, **kwds )
     print('Median, SigmaT, Tau, Sigma')
     for i in range( len(values) ):
         print(values[i])
@@ -601,7 +607,7 @@ if __name__ == '__main__':
         CoefTerms = {'terms':(1,1,1,1,1,1,1), 'NewCoefs':NewCoefs}
 
         print('AS SA at %s'%('%3.2f'%T))
-        AS14nga = AS14nga_test(T,CoefTerms)
+        AS14nga = utils.AS14nga_test(T,CoefTerms)
 
         T = -1.0
         print('AS PGA:')

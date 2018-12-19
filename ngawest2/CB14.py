@@ -2,7 +2,11 @@
 """
 CB 2014 NGA model
 """
-from .utils import *
+
+import os
+import numpy as np
+
+from . import utils
 
 class CB14_nga():
     """
@@ -30,7 +34,7 @@ class CB14_nga():
         coefs = inputs[:,1:]
         for i in range( len(self.periods) ):
             T1 = self.periods[i]
-            Tkey = GetKey(T1)
+            Tkey = utils.GetKey(T1)
 
             # periods list ( -2: PGV, -1: PGA ) (mapping between the NGA models accordingly, -1: PGV, 0: PGA)
             if Tkey == '-1.000':
@@ -92,13 +96,13 @@ class CB14_nga():
             if rake == None or rake < -180 or rake > 180.:
                 raise ValueError('rake angle should be within [-180,180]')
             else:
-                self.Frv, self.Fnm = rake2ftype_CB( self.rake )
+                self.Frv, self.Fnm = utils.rake2ftype_CB( self.rake )
 
         if W == None:
             if self.rake == None:
                 raise ValueError('you should give either the fault width W or the rake angle')
             else:
-                self.W = calc_W(self.M,self.rake)
+                self.W = utils.calc_W(self.M,self.rake)
         else:
             self.W = W
 
@@ -106,12 +110,12 @@ class CB14_nga():
             if self.rake == None:
                 raise ValueError('you should give either the fault dip angle or the rake angle')
             else:
-                self.dip = calc_dip( self.rake )
+                self.dip = utils.calc_dip( self.rake )
         else:
             self.dip = dip
 
         if Zhypo == None:
-            self.Zhypo = calc_Zhypo(self.M, self.rake)
+            self.Zhypo = utils.calc_Zhypo(self.M, self.rake)
         else:
             self.Zhypo = Zhypo
 
@@ -120,10 +124,10 @@ class CB14_nga():
                 if self.rake == None:
                     raise ValueError('you should give either the Ztor or the rake angle')
                 else:
-                    Zhypo = calc_Zhypo( self.M, self.rake )
+                    Zhypo = utils.calc_Zhypo( self.M, self.rake )
             if not W:
-                W = calc_W(self.M, self.rake)
-            self.Ztor = calc_Ztor( W, self.dip, Zhypo )
+                W = utils.calc_W(self.M, self.rake)
+            self.Ztor = utils.calc_Ztor( W, self.dip, Zhypo )
         else:
             self.Ztor = Ztor
 
@@ -140,8 +144,8 @@ class CB14_nga():
             if self.Rjb == 0:
                 Fhw = 1
                 azimuth = 90
-            Rx_tmp = calc_Rx( self.Rjb, self.Ztor, W, self.dip, azimuth, Rrup=Rrup )
-            self.Rrup = calc_Rrup( Rx_tmp, self.Ztor, W, self.dip, azimuth, Rjb = self.Rjb )
+            Rx_tmp = utils.calc_Rx( self.Rjb, self.Ztor, W, self.dip, azimuth, Rrup=Rrup )
+            self.Rrup = utils.calc_Rrup( Rx_tmp, self.Ztor, W, self.dip, azimuth, Rjb = self.Rjb )
         else:
             self.Rrup = Rrup
         if azimuth == 90.:
@@ -162,7 +166,7 @@ class CB14_nga():
             if self.Rjb == 0:
                 Fhw = 1
                 azimuth = 90
-            self.Rx = calc_Rx( self.Rjb, self.Ztor, W, self.dip, azimuth, Rrup=Rrup )
+            self.Rx = utils.calc_Rx( self.Rjb, self.Ztor, W, self.dip, azimuth, Rrup=Rrup )
         else:
             self.Rx = Rx
 
@@ -181,7 +185,7 @@ class CB14_nga():
         # update coeficient (use updated coefficients)
         if NewCoefs != None:
             NewCoefKeys = list(NewCoefs.keys())
-            Tkey = GetKey(self.T)
+            Tkey = utils.GetKey(self.T)
             for key in NewCoefKeys:
                 self.Coefs[Tkey][key] = NewCoefs[key]
 
@@ -203,9 +207,9 @@ class CB14_nga():
         Moment term
         """
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
 
         c0 = self.Coefs[Ti]['c0']
         c1 = self.Coefs[Ti]['c1']
@@ -230,9 +234,9 @@ class CB14_nga():
         Geometrical attenuation
         """
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
 
         c5 = self.Coefs[Ti]['c5']
         c6 = self.Coefs[Ti]['c6']
@@ -248,9 +252,9 @@ class CB14_nga():
         Anelastic Attneuation
         """
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
         c20 = self.Coefs[Ti]['c20']
         D_c20 = self.Coefs[Ti]['D_c20_%s'%self.region]
         if self.Rrup > 80:
@@ -267,9 +271,9 @@ class CB14_nga():
         or style of the fault
         """
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
         c8 = self.Coefs[Ti]['c8']
         c9 = self.Coefs[Ti]['c9']
         f_fltF = c8*self.Frv + c9*self.Fnm
@@ -283,9 +287,9 @@ class CB14_nga():
         Hanging Wall term
         """
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
 
         c10 = self.Coefs[Ti]['c10']
         a2 = self.Coefs[Ti]['a2']
@@ -320,9 +324,9 @@ class CB14_nga():
 
     def rup_dip_function(self,Tother=None):
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
         c19 = self.Coefs[Ti]['c19']
         f_dip = c19*self.dip*(self.M<=4.5) + c19*(5.5-self.M)*self.dip*(4.5<self.M<=5.5) + 0*(self.M>5.5)
         #print 'f_dip:', f_dip
@@ -330,9 +334,9 @@ class CB14_nga():
 
     def hypo_depth_function(self,Tother=None):
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
 
         c17 = self.Coefs[Ti]['c17']
         c18 = self.Coefs[Ti]['c18']
@@ -348,9 +352,9 @@ class CB14_nga():
         Basin-effect term
         """
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
         else:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
         if Z25 == None:
             Z25 = self.Z25
 
@@ -398,9 +402,9 @@ class CB14_nga():
             Vs30 = self.Vs30
 
         if Tother != None:
-            Ti = GetKey(Tother)
+            Ti = utils.GetKey(Tother)
         else:
-            Ti = GetKey(self.T)
+            Ti = utils.GetKey(self.T)
 
         c11 = self.Coefs[Ti]['c11']
         c12 = self.Coefs[Ti]['c12']
@@ -462,9 +466,9 @@ class CB14_nga():
         if Vs30 == None:
             Vs30 = self.Vs30
         if Tother == None:
-            Ti = GetKey( self.T )
+            Ti = utils.GetKey( self.T )
         else:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
 
         k1 = self.Coefs[Ti]['k1']
         k2 = self.Coefs[Ti]['k2']
@@ -481,9 +485,9 @@ class CB14_nga():
 
     def sigma_tau_lnY(self, Tother=None):
         if Tother != None:
-            Ti = GetKey(Tother)
+            Ti = utils.GetKey(Tother)
         else:
-            Ti = GetKey(self.T)
+            Ti = utils.GetKey(self.T)
         phi1 = self.Coefs[Ti]['phi1']
         phi2 = self.Coefs[Ti]['phi2']
         tau1 = self.Coefs[Ti]['tau1']
@@ -498,9 +502,9 @@ class CB14_nga():
         Intra-event and inter-vent residual standard deviation
         """
         if Tother != None:
-            Ti = GetKey(Tother)
+            Ti = utils.GetKey(Tother)
         else:
-            Ti = GetKey(self.T)
+            Ti = utils.GetKey(self.T)
         if Vs30 == None:
             Vs30 = self.Vs30
 
@@ -529,9 +533,9 @@ class CB14_nga():
     def sd_calc(self,Vs30=None,Tother=None):
 
         if Tother != None:
-            Ti = GetKey(Tother)
+            Ti = utils.GetKey(Tother)
         else:
-            Ti = GetKey(self.T)
+            Ti = utils.GetKey(self.T)
         if Vs30 == None:
             Vs30 = self.Vs30
 
@@ -571,7 +575,7 @@ def CB14nga_test(T, CoefTerms):
     # How to use it
     CBnga = CB14_nga()
     kwds = {'Ftype':Ftype,'Z25':Z25,'Rrup':Rrup,'Zhypo':Zhypo,'W':W,'Fhw':Fhw, 'Ztor':Ztor,'azimuth':azimuth,'dip':dip,'Arb':Arb,'CoefTerms':CoefTerms}
-    values = mapfunc( CBnga, M, Rjb, Vs30, T, rake,**kwds )
+    values = utils.mapfunc( CBnga, M, Rjb, Vs30, T, rake, **kwds )
 
     for i in range( len(values) ):
         print(values[i])

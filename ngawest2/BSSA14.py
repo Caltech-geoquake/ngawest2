@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-from .utils import *
+import os
+import numpy as np
+
+from . import utils
 
 class BSSA14_nga:
     """
@@ -31,7 +34,7 @@ class BSSA14_nga:
         coefs = inputs[:,1:]
         for i in range( len(self.periods) ):
             T1 = self.periods[i]
-            Tkey = GetKey(T1)
+            Tkey = utils.GetKey(T1)
 
             # periods list ( -2: PGV, -1: PGA ) (mapping between the NGA models accordingly, -1: PGV, 0: PGA)
             if Tkey == '-1.000':
@@ -128,7 +131,7 @@ class BSSA14_nga:
         # modify the coefficients
         if NewCoefs != None:
             # only update Coefs given by NewCoefs (at self.T)
-            Tkey = GetKey( self.T )
+            Tkey = utils.GetKey( self.T )
             NewCoefKeys = list(NewCoefs.keys())
             for key in NewCoefKeys:
                 self.Coefs[Tkey][key] = NewCoefs[key]
@@ -147,7 +150,7 @@ class BSSA14_nga:
     # further regression analysis
     # ============================
     def ftype(self):
-        FT = rake2ftype_BA( self.rake )   # change in this version
+        FT = utils.rake2ftype_BA( self.rake )   # change in this version
         if FT not in self.faults:
             raise ValueError('%s\n%s\n%s' % \
                             ('Invalid fault type!',
@@ -177,9 +180,9 @@ class BSSA14_nga:
         Magnitude-Moment scaling
         """
         if Tother != None:
-            Ti = GetKey(Tother)
+            Ti = utils.GetKey(Tother)
         else:
-            Ti = GetKey(self.T)
+            Ti = utils.GetKey(self.T)
 
         e0 = self.Coefs[Ti]['e0']
         e1 = self.Coefs[Ti]['e1']
@@ -204,9 +207,9 @@ class BSSA14_nga:
         Geometrical spreading? (yes ~ ln(R))
         """
         if Tother != None:
-            Ti = GetKey(Tother)
+            Ti = utils.GetKey(Tother)
         else:
-            Ti = GetKey(self.T)
+            Ti = utils.GetKey(self.T)
 
         h = self.Coefs[Ti]['h']
         c1 = self.Coefs[Ti]['c1']
@@ -235,10 +238,10 @@ class BSSA14_nga:
         if Vs30 != None:
             self.Vs30 = Vs30
         if Tother != None:
-            Ti = GetKey( Tother )
+            Ti = utils.GetKey( Tother )
             T = Tother
         else:
-            Ti = GetKey(self.T )
+            Ti = utils.GetKey(self.T )
             T = self.T
 
         # ===============
@@ -304,7 +307,7 @@ class BSSA14_nga:
 
 
     def compute_std(self):
-        Ti = GetKey(self.T )
+        Ti = utils.GetKey(self.T )
 
         phi1 = self.Coefs[Ti]['phi1']
         phi2 = self.Coefs[Ti]['phi2']
@@ -368,7 +371,7 @@ def BSSA14nga_test(T,CoefTerms):
     kwds = {'Mech':Mech,'Ftype':Ftype, 'Z10':Z10, 'Dregion':'GlobalCATW', 'country':'California', 'CoefTerms':CoefTerms}
     BSSAnga = BSSA14_nga()    # BA08nga instance
     if 1:
-        values = mapfunc( BSSAnga, Mw, Rjb, Vs30, T, rake, **kwds )
+        values = utils.mapfunc( BSSAnga, Mw, Rjb, Vs30, T, rake, **kwds )
         for ivalue in range( len(values) ):
             print(Rjb[ivalue], values[ivalue])
         print('==========================================')
@@ -381,7 +384,7 @@ def BSSA14nga_test(T,CoefTerms):
     return BSSAnga
 
 if __name__ == '__main__':
-    import sys
+    #import sys
     #T = 0.3; NewCoefs = None     # pure one
     #print 'BA SA at %s second'%('%3.2f'%T)
     #CoefTerms={'terms':(1,1,1),'NewCoefs':NewCoefs}
