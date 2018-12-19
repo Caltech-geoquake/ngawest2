@@ -51,8 +51,7 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
         ngaM = BSSA14.BSSA14_nga()
         kwds = {'Mech': Mech, 'Ftype': Ftype, 'Z10': Z10, 'Dregion': Dregion,
                 'country': country, 'CoefTerms': dict1[model_name]}
-
-    if model_name == 'CB':
+    elif model_name == 'CB':
         ngaM = CB14.CB14_nga()
         if Fhw is None:
             Fhw = 0
