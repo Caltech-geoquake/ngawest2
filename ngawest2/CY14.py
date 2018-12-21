@@ -278,7 +278,7 @@ class CY14_nga:
         lnYref =  self.moment_function() + self.distance_function() + self.flt_function() + self.directivity_function() + self.hw_function()
         return lnYref
 
-    def site_function( self ):
+    def site_function( self, ln_Yref=None ):
         Ti = utils.GetKey(self.T)
 
         f1 = self.Coefs[Ti]['phi1']
@@ -286,7 +286,10 @@ class CY14_nga:
         f3 = self.Coefs[Ti]['phi3']
         f4 = self.Coefs[Ti]['phi4']
 
-        lnY_ref = self.lnYref()
+        if ln_Yref is None:
+            lnY_ref = self.lnYref()
+        else:
+            lnY_ref = ln_Yref
        # print "Yref = ", np.exp(lnY_ref)
         term8 = f1*min([np.log(self.Vs30/1130.),0])
         term9 = f2*( np.exp(f3*(min(self.Vs30,1130)-360)) - np.exp(f3*(1130-360)) )*np.log((np.exp(lnY_ref)+f4)/f4)

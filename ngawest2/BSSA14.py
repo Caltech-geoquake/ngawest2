@@ -231,7 +231,7 @@ class BSSA14_nga:
         if self.country == 'Japan':
             return (-5.23/2.)*np.log((Vs30**2+412.39**2)/(1360**2+412.39**2))
 
-    def soil_function(self, Vs30=None, Tother=None):
+    def soil_function(self, Vs30=None, Tother=None, PGA_r=None):
         """
         Site Amplification Function
         """
@@ -258,9 +258,11 @@ class BSSA14_nga:
         # non-linear term
         # =================
         # 1. compute pga4nl, which is defined as the media PGA when Vs30=Vref=760 m/s
-        Tpga = -1.0    # compute PGA
-        pga4nl = np.exp( self.moment_function(Tother=Tpga) + self.distance_function(Tother=Tpga) )
-        #print 'PGAr: ', pga4nl
+        if PGA_r is None:
+            Tpga = -1.0    # compute PGA
+            pga4nl = np.exp( self.moment_function(Tother=Tpga) + self.distance_function(Tother=Tpga) )
+        else:
+            pga4nl = PGA_r
 
         # 2. compute nonlinear site effect
         f4 = self.Coefs[Ti]['f4']
