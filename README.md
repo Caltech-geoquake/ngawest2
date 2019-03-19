@@ -20,10 +20,15 @@ import ngawest2
 
 model = 'ASK14'
 Mw, R_rup, Vs30, T, rake= 5.5, 20, 450, 2.4, 0
-result = ngawest2.GMPE(model, Mw, R_rup, Vs30, T, rake=rake)
+result = ngawest2.GMPE(model, Mw, R_rup, Vs30, T, rake=rake)  # a single value
 
 T_array = [2, 3, 4, 5, 6]
-results = ngawest2.GMPE_array(model, Mw, R_rup, Vs30, T_array, rake=rake)
+results = ngawest2.GMPE_array(model, Mw, R_rup, Vs30, T_array, rake=rake)  # an array
+
+T = 0.7  # unit: second
+z1 = 75  # unit: meter
+PGA = 0.9  # unit: g
+ampl = ngawest2.site_factor('BSSA', Vs30, z1, PGA, T)  # a single value
 ```
 
 ### To-do
