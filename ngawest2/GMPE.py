@@ -13,6 +13,7 @@ from . import BSSA14
 from . import CB14
 from . import CY14
 from . import ASK14
+from . import helper
 
 #%%----------------------------------------------------------------------------
 def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
@@ -25,6 +26,8 @@ def GMPE(model_name, Mw, Rjb, Vs30, period, epislon=0, NGAs=None,
          Dregion='GlobalCATW',
          CRjb=15, Ry0=None,
          D_DPP=0):
+
+    model_name = helper.check_model_name(model_name)
 
     if NGAs == None:
         NGAs={'CB':{'NewCoefs':None,'terms':(1,1,1,1,1,1,1,1,1)},
@@ -146,8 +149,7 @@ def GMPE_array(model_name, Mw, Rjb, Vs30, period_array, epislon=0, NGAs=None,
     if not isinstance(period_array, collections.Iterable):
         raise TypeError('`period_array` must be a array-like object.')
 
-    if model_name not in {'BSSA', 'CB', 'CY', 'ASK'}:
-        raise ValueError("`model_name` must be one of {'ASK', 'BSSA', 'CB', 'CY'}")
+    model_name = helper.check_model_name(model_name)
 
     results = []
     for period in period_array:

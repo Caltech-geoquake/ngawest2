@@ -11,6 +11,7 @@ from . import BSSA14
 from . import CB14
 from . import CY14
 from . import ASK14
+from . import helper
 
 #%%----------------------------------------------------------------------------
 def site_factor(model_name, Vs30, Z10_in_m, PGA, T):
@@ -22,8 +23,7 @@ def site_factor(model_name, Vs30, Z10_in_m, PGA, T):
     if T > 10.0 or T < 0.01:
         raise ValueError('`T` value should be within [0.01, 10].')
 
-    if model_name not in ['BSSA', 'ASK', 'CB', 'CY']:
-        raise ValueError("`model_name` must be one of {'ASK', 'BSSA', 'CB', 'CY'}")
+    model_name = helper.check_model_name(model_name)
 
     Ts = {
         'BSSA': [0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.10, 0.15, 0.20, 0.25,
